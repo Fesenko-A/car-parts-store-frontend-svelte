@@ -9,6 +9,8 @@
     SidebarWrapper,
     Toggle,
     Tooltip,
+    Pagination,
+    PaginationItem,
   } from "flowbite-svelte";
   import {
     GridSolid,
@@ -44,6 +46,14 @@
   $: $brands, (brandsList = $brands);
   $: $specialTags, (specialTagsList = $specialTags);
   $: $categories, (categoriesList = $brands);
+  let helper = { start: 1, end: 10, total: 100 };
+
+  const previous = () => {
+    alert("Previous btn clicked. Make a call to your server to fetch data.");
+  };
+  const next = () => {
+    alert("Next btn clicked. Make a call to your server to fetch data.");
+  };
 </script>
 
 <div class="m-3 flex items-center">
@@ -135,4 +145,19 @@
   {#each productsList as product (product.id)}
     <ProductCard {product} />
   {/each}
+</div>
+
+<div class="flex flex-col items-center justify-center gap-2 mb-2">
+  <div class="text-sm text-gray-700">
+    Showing <span class="font-semibold text-gray-900">{helper.start}</span>
+    to
+    <span class="font-semibold text-gray-900">{helper.end}</span>
+    of
+    <span class="font-semibold text-gray-900">{helper.total}</span>
+    Entries
+  </div>
+
+  <Pagination table pages={[]}>
+    <span slot="prev">Prev</span>
+  </Pagination>
 </div>
