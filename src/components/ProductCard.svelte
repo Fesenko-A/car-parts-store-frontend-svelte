@@ -11,7 +11,6 @@
   color="none"
   class="w-full h-full min-h-[400px] flex flex-col overflow-hidden"
 >
-  <!-- Image section (70% height) -->
   <a
     href="/"
     class="h-[70%] flex-shrink-0 flex items-center justify-center bg-white/5 overflow-hidden"
@@ -23,7 +22,6 @@
     />
   </a>
 
-  <!-- Content section (30% height with enforced constraints) -->
   <div class="p-4 bg-slate-800 flex flex-col h-[30%] min-h-[120px]">
     <a href="/" class="mb-2">
       <h5
