@@ -32,14 +32,14 @@
 </script>
 
 <Navbar fluid class="flex items-center justify-between flex-wrap px-4">
-  <!-- Left Section: Logo -->
+  <!-- Logo -->
   <div class="flex items-center min-w-0">
     <NavBrand href="/" class="flex items-center">
       <img src="/driveline.png" class="me-3 h-6 sm:h-9" alt="DriveLine Logo" />
     </NavBrand>
   </div>
 
-  <!-- Center Section: Search -->
+  <!-- Search -->
   <div class="flex-1 flex justify-center px-2 min-w-0">
     <div class="relative w-full max-w-md">
       <div
@@ -57,7 +57,7 @@
     </div>
   </div>
 
-  <!-- Right Section: Icons -->
+  <!-- Icons -->
   <div class="flex items-center justify-end space-x-2 min-w-0">
     <!-- Mobile Cart Icon  -->
     <Button
@@ -70,15 +70,24 @@
       <CartOutline size="lg" />
     </Button>
 
-    <!-- Desktop Nav Icons -->
-
-    <!-- Mobile Hamburger -->
     <NavHamburger />
   </div>
-  <NavUl class="lg:flex items-center space-x-3 overflow-hidden">
-    <NavLi href="/"><CartOutline size="lg" /></NavLi>
-    <NavLi href="/"><InfoCircleOutline size="lg" /></NavLi>
-    <NavLi href="/"><RectangleListSolid size="lg" /></NavLi>
-    <NavLi href="/"><UserCircleSolid size="lg" /></NavLi>
+  <NavUl class="items-center space-x-3">
+    <NavLi href="/" class="flex items-center">
+      <CartOutline size="lg" />
+      <span class="block md:hidden ps-2">Cart</span>
+    </NavLi>
+    <NavLi href="/" class="flex items-center">
+      <InfoCircleOutline size="lg" />
+      <span class="block md:hidden ps-2">Information</span>
+    </NavLi>
+    <NavLi href="/" class="flex items-center">
+      <RectangleListSolid size="lg" />
+      <span class="block md:hidden ps-2">My orders</span></NavLi
+    >
+    <NavLi href="/" class="flex items-center">
+      <UserCircleSolid size="lg" />
+      <span class="block md:hidden ps-2">Profile</span></NavLi
+    >
   </NavUl>
 </Navbar>
