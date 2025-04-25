@@ -1,5 +1,13 @@
-import { writable } from "svelte/store";
-import type { Brand, Category, Product, SpecialTag } from "../types";
+import { get, writable } from "svelte/store";
+import type {
+  Brand,
+  Category,
+  Order,
+  OrderDetails,
+  Product,
+  SpecialTag,
+  User,
+} from "../types";
 
 export const products = writable<Product[]>([
   {
@@ -163,3 +171,88 @@ export const specialTags = writable<SpecialTag[]>([
   { id: 1, name: "Best seller" },
   { id: 2, name: "Litimed offer" },
 ]);
+
+function getRandomItem<T>(arr: T[]) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+const sampleUsers: User[] = [
+  {
+    id: "u1",
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@example.com",
+    phoneNumber: "123456789",
+    role: "Customer",
+  },
+  {
+    id: "u2",
+    firstName: "Jane",
+    lastName: "Smith",
+    email: "jane@example.com",
+    phoneNumber: "987654321",
+    role: "Customer",
+  },
+];
+
+function generateFakeOrders(count: number): Order[] {
+  const productList = get(products);
+  const fakeOrders: Order[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const user = getRandomItem(sampleUsers);
+    const orderDetails: OrderDetails[] = [];
+
+    const numItems = Math.floor(Math.random() * 3) + 1;
+    const selectedProducts = [...productList]
+      .sort(() => 0.5 - Math.random())
+      .slice(0, numItems);
+
+    let total = 0;
+
+    selectedProducts.forEach((product, index) => {
+      const quantity = Math.floor(Math.random() * 3) + 1;
+      const price = product.finalPrice * quantity;
+      total += price;
+
+      orderDetails.push({
+        orderDetailsId: i * 10 + index,
+        orderId: i,
+        productId: product.id,
+        product,
+        productNameAtOrder: product.name,
+        productPriceAtOrder: product.finalPrice,
+        quantity,
+        price,
+        order: {} as any,
+      });
+    });
+
+    const order: Order = {
+      orderId: i,
+      pickupName: `${user.firstName} ${user.lastName}`,
+      pickupPhoneNumber: user.phoneNumber,
+      pickupEmail: user.email,
+      userId: user.id,
+      user,
+      status: ["Processing", "Shipped", "Delivered"][i % 3],
+      paymentMethod: "Card",
+      orderDate: new Date(Date.now() - i * 86400000),
+      lastUpdate: new Date(Date.now() - i * 43200000),
+      paid: true,
+      orderDetails: [],
+      orderTotal: parseFloat(total.toFixed(2)),
+      totalItems: orderDetails.reduce((sum, d) => sum + d.quantity, 0),
+    };
+
+    orderDetails.forEach((d) => (d.order = order));
+    order.orderDetails = orderDetails;
+
+    fakeOrders.push(order);
+  }
+
+  return fakeOrders;
+}
+
+export const orders = writable<Order[]>(generateFakeOrders(10));
+export const users = writable<User[]>(sampleUsers);

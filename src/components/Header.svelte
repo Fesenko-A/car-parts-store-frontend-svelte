@@ -81,7 +81,7 @@
       <InfoCircleOutline size="lg" />
       <span class="block md:hidden ps-2">About</span>
     </NavLi>
-    <NavLi href="/" class="flex items-center">
+    <NavLi href="/user/myorders" class="flex items-center">
       <RectangleListSolid size="lg" />
       <span class="block md:hidden ps-2">My orders</span></NavLi
     >
