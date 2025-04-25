@@ -10,6 +10,8 @@
   import { onMount } from "svelte";
   import { get } from "svelte/store";
   import { orders } from "../stores/fakeDatabase";
+  import { formatCurrency, formatDate } from "../utils/utils";
+  import { goto } from "$app/navigation";
 
   let orderList: any[] = [];
 
@@ -17,13 +19,9 @@
     orderList = get(orders);
   });
 
-  function formatDate(date: Date | string) {
-    return new Date(date).toLocaleDateString("en-GB");
-  }
-
-  function formatCurrency(amount: number) {
-    return `${amount.toFixed(2)} €`;
-  }
+  const navigateToDetails = (id: number) => {
+    goto(`/order/${id}`);
+  };
 </script>
 
 <Table hoverable={true} striped={true} class="mt-5 mb-5">
@@ -35,8 +33,8 @@
     <TableHeadCell>Total Price</TableHeadCell>
   </TableHead>
   <TableBody tableBodyClass="divide-y">
-    {#each orderList as order, index}
-      <TableBodyRow class={index % 2 === 0 ? "bg-white" : "bg-gray-100"}>
+    {#each orderList as order}
+      <TableBodyRow on:click={() => navigateToDetails(order.orderId)}>
         <TableBodyCell>{order.orderId}</TableBodyCell>
         <TableBodyCell>{formatDate(order.orderDate)}</TableBodyCell>
         <TableBodyCell>{formatDate(order.lastUpdate)}</TableBodyCell>

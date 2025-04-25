@@ -8,6 +8,7 @@ import type {
   SpecialTag,
   User,
 } from "../types";
+import { ORDER_STATUS, PAYMENT_METHODS } from "../constants";
 
 export const products = writable<Product[]>([
   {
@@ -235,8 +236,15 @@ function generateFakeOrders(count: number): Order[] {
       pickupEmail: user.email,
       userId: user.id,
       user,
-      status: ["Processing", "Shipped", "Delivered"][i % 3],
-      paymentMethod: "Card",
+      status: [
+        ORDER_STATUS.PENDING,
+        ORDER_STATUS.CONFIRMED,
+        ORDER_STATUS.PROCESSING,
+        ORDER_STATUS.READY,
+        ORDER_STATUS.COMPLETED,
+        ORDER_STATUS.CANCELED,
+      ][i % 6],
+      paymentMethod: i % 2 == 0 ? PAYMENT_METHODS.CASH : PAYMENT_METHODS.ONLINE,
       orderDate: new Date(Date.now() - i * 86400000),
       lastUpdate: new Date(Date.now() - i * 43200000),
       paid: true,
