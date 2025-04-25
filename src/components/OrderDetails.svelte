@@ -7,8 +7,10 @@
     TableBody,
     TableBodyRow,
     TableBodyCell,
+    Button,
   } from "flowbite-svelte";
   import type { Order } from "../types";
+  import { PAYMENT_METHODS } from "../constants";
 
   export let order: Order;
 </script>
@@ -34,8 +36,18 @@
       </div>
       <div class="bg-gray-100 p-4 rounded-lg">
         <p class="text-sm text-gray-600">Payment Method</p>
-        <p class="font-medium">{order.paymentMethod}</p>
+        <div class="flex items-center">
+          {#if order.paymentMethod === PAYMENT_METHODS.CASH}
+            <span class="font-medium text-gray-800">{order.paymentMethod}</span>
+            <Button size="xs" class=" text-white rounded-lg pt-1 pb-1 ms-2">
+              Pay Online
+            </Button>
+          {:else}
+            <p class="font-medium text-gray-800">{order.paymentMethod}</p>
+          {/if}
+        </div>
       </div>
+
       <div class="bg-gray-100 p-4 rounded-lg">
         <p class="text-sm text-gray-600">Pickup Name</p>
         <p class="font-medium">{order.pickupName}</p>
@@ -55,22 +67,29 @@
   <Table striped={true} hoverable={true} class="mb-5">
     <TableHead>
       <TableHeadCell>Product</TableHeadCell>
-      <TableHeadCell>Quantity</TableHeadCell>
       <TableHeadCell>Price per Unit</TableHeadCell>
+      <TableHeadCell>Quantity</TableHeadCell>
       <TableHeadCell>Total</TableHeadCell>
     </TableHead>
     <TableBody tableBodyClass="divide-y">
       {#each order.orderDetails as detail}
         <TableBodyRow>
           <TableBodyCell>{detail.productNameAtOrder}</TableBodyCell>
-          <TableBodyCell>{detail.quantity}</TableBodyCell>
           <TableBodyCell
             >{formatCurrency(detail.productPriceAtOrder)}</TableBodyCell
           >
+          <TableBodyCell>{detail.quantity}</TableBodyCell>
           <TableBodyCell>{formatCurrency(detail.price)}</TableBodyCell>
         </TableBodyRow>
-      {/each}
-    </TableBody>
+      {/each}</TableBody
+    >
+    <tfoot>
+      <tr class="font-semibold text-gray-900">
+        <th scope="row" class="py-3 px-6 text-base" colspan="2">Total</th>
+        <td class="py-3 px-6 font-bold">{order.totalItems}</td>
+        <td class="py-3 px-6 font-bold">{formatCurrency(order.orderTotal)}</td>
+      </tr>
+    </tfoot>
   </Table>
 {:else}
   <p>Order not found.</p>
