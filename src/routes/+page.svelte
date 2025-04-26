@@ -10,7 +10,6 @@
     Toggle,
     Tooltip,
     Pagination,
-    PaginationItem,
   } from "flowbite-svelte";
   import {
     GridSolid,
@@ -26,10 +25,10 @@
   import type { Product, Brand, Category, SpecialTag } from "../types";
   import {
     brands,
-    products,
     specialTags,
     categories,
-  } from "../stores/fakeDatabase";
+  } from "../stores/productDetailsStore";
+  import { products } from "../stores/productStore";
   let hidden2 = true;
   let transitionParams = {
     x: -320,

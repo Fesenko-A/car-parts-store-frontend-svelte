@@ -9,9 +9,9 @@
   } from "flowbite-svelte";
   import { onMount } from "svelte";
   import { get } from "svelte/store";
-  import { orders } from "../stores/fakeDatabase";
   import { formatCurrency, formatDate } from "../utils/utils";
   import { goto } from "$app/navigation";
+  import { orders } from "../stores/orderStore";
 
   let orderList: any[] = [];
 

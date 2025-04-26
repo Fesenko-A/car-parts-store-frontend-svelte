@@ -73,7 +73,7 @@
     <NavHamburger />
   </div>
   <NavUl class="items-center space-x-3">
-    <NavLi href="/" class="flex items-center">
+    <NavLi href="/shoppingCart" class="flex items-center">
       <CartOutline size="lg" />
       <span class="block md:hidden ps-2">Cart</span>
     </NavLi>

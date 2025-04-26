@@ -1,5 +1,5 @@
+import { products } from "../../../stores/productStore";
 import type { PageLoad } from "./$types";
-import { products } from "../../../stores/fakeDatabase";
 import { get } from "svelte/store";
 
 export const load: PageLoad = ({ params }) => {
