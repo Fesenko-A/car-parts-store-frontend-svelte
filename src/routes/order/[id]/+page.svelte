@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import OrderDetails from "../../../components/OrderDetails.svelte";
-  import { orders } from "../../../stores/fakeDatabase";
+  import { orders } from "../../../stores/orderStore";
 
   let order: any;
 

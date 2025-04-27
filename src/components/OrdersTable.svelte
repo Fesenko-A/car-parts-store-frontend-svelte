@@ -7,17 +7,10 @@
     TableHead,
     TableHeadCell,
   } from "flowbite-svelte";
-  import { onMount } from "svelte";
-  import { get } from "svelte/store";
   import { formatCurrency, formatDate } from "../utils/utils";
   import { goto } from "$app/navigation";
-  import { orders } from "../stores/orderStore";
 
-  let orderList: any[] = [];
-
-  onMount(() => {
-    orderList = get(orders);
-  });
+  export let orders: any[] = [];
 
   const navigateToDetails = (id: number) => {
     goto(`/order/${id}`);
@@ -33,7 +26,7 @@
     <TableHeadCell>Total Price</TableHeadCell>
   </TableHead>
   <TableBody tableBodyClass="divide-y">
-    {#each orderList as order}
+    {#each orders as order}
       <TableBodyRow on:click={() => navigateToDetails(order.orderId)}>
         <TableBodyCell>{order.orderId}</TableBodyCell>
         <TableBodyCell>{formatDate(order.orderDate)}</TableBodyCell>

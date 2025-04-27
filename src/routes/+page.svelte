@@ -29,6 +29,7 @@
     categories,
   } from "../stores/productDetailsStore";
   import { products } from "../stores/productStore";
+
   let hidden2 = true;
   let transitionParams = {
     x: -320,
@@ -46,13 +47,6 @@
   $: $specialTags, (specialTagsList = $specialTags);
   $: $categories, (categoriesList = $brands);
   let helper = { start: 1, end: 10, total: 100 };
-
-  const previous = () => {
-    alert("Previous btn clicked. Make a call to your server to fetch data.");
-  };
-  const next = () => {
-    alert("Next btn clicked. Make a call to your server to fetch data.");
-  };
 </script>
 
 <div class="m-3 flex items-center">

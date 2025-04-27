@@ -75,3 +75,11 @@ export type User = {
   phoneNumber: string;
   role: string;
 };
+
+export type OrderFilters = {
+  userId?: string;
+  searchString?: string;
+  status?: string;
+  pageNumber: number;
+  pageSize: number;
+};
