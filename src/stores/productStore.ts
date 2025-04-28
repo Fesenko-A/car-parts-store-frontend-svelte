@@ -26,7 +26,8 @@ export const products = writable<Product[]>([
   {
     id: 2,
     name: "Shell Helix HX8 C3 Engine Oil - 5W-30 - 1Ltr",
-    description: "Shell Helix HX8 C3 Engine Oil - 5W-30 - 1Ltr DESC",
+    description:
+      "Shell Helix HX8 C3 Engine Oil - 5W-30 - 1Ltr DESC Shell Helix HX8 C3 Engine Oil - 5W-30 - 1Ltr DESC Shell Helix HX8 C3 Engine Oil - 5W-30 - 1Ltr DESC Shell Helix HX8 C3 Engine Oil - 5W-30 - 1Ltr DESC",
     imageUrl:
       "https://lkqmedia.eurocarparts.com/product/521773722/?guid=ztc6puxzh91kyzqzex3qdg3nh1x8ui1nu64ngje&currentVersion=1721058383000&t=resize&height=482&width=482",
     brandId: 2,

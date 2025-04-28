@@ -5,8 +5,8 @@ export type Product = {
   imageUrl: string;
   brandId: number;
   brand: Brand;
-  specialTagId?: number;
-  specialTag?: SpecialTag;
+  specialTagId?: number | null;
+  specialTag?: SpecialTag | null;
   categoryId: number;
   category: Category;
   inStock: boolean;
