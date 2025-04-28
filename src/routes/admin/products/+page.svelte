@@ -22,19 +22,27 @@
 
   let selectedProduct: Product;
   let hidden = true;
+  let searchQuery: string = "";
 
   let productsList: Product[] = [];
   $: $products, (productsList = $products);
+
+  function handleSearch() {
+    console.log(searchQuery);
+  }
 </script>
 
 <div
   class="flex flex-col sm:flex-row justify-end gap-2 p-2 rounded-lg shadow-sm"
 >
   <ButtonGroup class="w-1/4 h-10">
-    <Input class="" placeholder="Search by product name" />
-    <Button color="primary"><SearchOutline /></Button>
+    <Input bind:value={searchQuery} placeholder="Search by product name" />
+    <Button color="primary" on:click={handleSearch}><SearchOutline /></Button>
   </ButtonGroup>
-  <Button class="h-10">Add <PlusOutline class="ms-1" /></Button>
+
+  <Button class="h-10" on:click={() => (hidden = false)}>
+    Add <PlusOutline class="ms-1" />
+  </Button>
 </div>
 <Table hoverable={true}>
   <TableHead>

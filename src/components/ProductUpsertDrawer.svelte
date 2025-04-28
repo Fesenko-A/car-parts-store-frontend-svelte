@@ -21,10 +21,7 @@
   import { sineIn } from "svelte/easing";
   import type { Product } from "../types";
 
-  export let selectedProduct: Product | undefined;
-  export let hidden: boolean = true;
-
-  $: selectedProduct = selectedProduct || {
+  const initialProductState: Product = {
     id: 0,
     name: "",
     description: "",
@@ -40,6 +37,11 @@
     category: { id: 0, name: "" },
     specialTag: { id: 0, name: "" },
   };
+
+  export let selectedProduct: Product = { ...initialProductState };
+  export let hidden: boolean = true;
+
+  $: selectedProduct = selectedProduct || initialProductState;
 
   $: specialTagName = selectedProduct.specialTag
     ? selectedProduct.specialTag.name
@@ -70,7 +72,29 @@
 
   function handleSubmit(event: Event) {
     event.preventDefault();
+
+    if (!selectedProduct) {
+      alert("Product details are not available.");
+      return;
+    }
+
+    const isValid =
+      selectedProduct.name.trim() !== "" &&
+      selectedProduct.description.trim() !== "" &&
+      selectedProduct.imageUrl.trim() !== "" &&
+      selectedProduct.brandId > 0 &&
+      selectedProduct.categoryId > 0 &&
+      selectedProduct.initialPrice > 0.1 &&
+      selectedProduct.discountPercentage >= 0 &&
+      selectedProduct.discountPercentage <= 100;
+
+    if (!isValid) {
+      alert("Please fill all required fields.");
+      return;
+    }
     console.log(selectedProduct);
+    hidden = true;
+    selectedProduct = { ...initialProductState };
   }
 
   let transitionParams = {
