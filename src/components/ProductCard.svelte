@@ -2,6 +2,7 @@
   import { Badge, Button, Card } from "flowbite-svelte";
   import type { Product } from "../types";
   import { CartPlusAltSolid } from "flowbite-svelte-icons";
+  import { formatCurrency } from "../utils/utils";
 
   export let product: Product;
 </script>
@@ -9,7 +10,7 @@
 <Card
   padding="none"
   color="none"
-  class="w-full h-full min-h-[400px] flex flex-col overflow-hidden"
+  class="w-full h-full min-h-[400px] flex flex-col overflow-hidden hover:scale-[1.02] transition-transform duration-200 shadow-lg"
 >
   {#if product.specialTag != null}
     <Badge rounded color="red" class="m-1 absolute text-sm "
@@ -28,7 +29,7 @@
   </a>
 
   <div class="p-4 bg-slate-800 flex flex-col h-[30%] min-h-[120px]">
-    <a href="/" class="mb-2">
+    <a href={`/product/${product.id}`} class="mb-2">
       <h5
         class="text-lg font-semibold tracking-tight text-white line-clamp-2 leading-tight"
       >
@@ -38,14 +39,16 @@
 
     <div class="flex justify-between items-center mt-auto">
       <div class="flex items-baseline flex-wrap gap-x-2">
-        <span class="text-xl font-bold text-white">${product.finalPrice}</span>
+        <span class="text-xl font-bold text-white"
+          >{formatCurrency(product.finalPrice)}</span
+        >
         {#if product.discountPercentage > 0}
           <span class="text-md text-red-400 line-through">
-            ${product.initialPrice}
+            {formatCurrency(product.initialPrice)}
           </span>
         {/if}
       </div>
-      <Button href="/" size="sm" class="flex-shrink-0">
+      <Button size="sm" class="flex-shrink-0">
         <CartPlusAltSolid class="w-5 h-5" />
       </Button>
     </div>
