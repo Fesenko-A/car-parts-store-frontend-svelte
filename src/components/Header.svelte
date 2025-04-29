@@ -20,7 +20,7 @@
   const handleSearch = () => {
     if (searchQuery.trim()) {
       console.log("Searching for:", searchQuery);
-      // TODO: Add search logic
+      // Add search logic
     }
   };
 
@@ -86,7 +86,7 @@
       <RectangleListSolid size="lg" class="hidden md:block header-button" />
       <span class="block md:hidden ps-2">My orders</span></NavLi
     >
-    <NavLi href="/" class="flex items-center">
+    <NavLi href="/login" class="flex items-center">
       <UserCircleSolid size="lg" class="hidden md:block header-button" />
       <span class="block md:hidden ps-2">Profile</span></NavLi
     >

@@ -53,4 +53,9 @@
       Login
     </Button>
   </div>
+  <p class="text-gray-500 mt-2">
+    Don't have an account? <a href="/register" class="underline"
+      >Register here</a
+    >
+  </p>
 </div>

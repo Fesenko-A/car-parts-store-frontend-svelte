@@ -50,7 +50,7 @@
 </script>
 
 <div class="m-3 flex items-center">
-  <Button on:click={() => (hidden2 = false)} color="dark">
+  <Button on:click={() => (hidden2 = false)}>
     <FilterOutline />
     Filters
   </Button>

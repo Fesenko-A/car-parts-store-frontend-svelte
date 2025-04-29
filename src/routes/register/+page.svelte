@@ -96,4 +96,7 @@
       Register
     </Button>
   </div>
+  <p class="text-gray-500 mt-2">
+    Already have an account? <a href="/login" class="underline">Login here</a>
+  </p>
 </div>

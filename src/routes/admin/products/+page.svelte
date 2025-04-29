@@ -44,8 +44,9 @@
     Add <PlusOutline class="ms-1" />
   </Button>
 </div>
-<Table hoverable={true}>
+<Table hoverable={true} striped={true}>
   <TableHead>
+    <TableHeadCell>Id</TableHeadCell>
     <TableHeadCell sort={() => 0}>PRODUCT NAME</TableHeadCell>
     <TableHeadCell>Description</TableHeadCell>
     <TableHeadCell>Category</TableHeadCell>
@@ -60,6 +61,7 @@
   <TableBody tableBodyClass="divide-y">
     {#each productsList as product}
       <TableBodyRow>
+        <TableBodyCell>{product.id}</TableBodyCell>
         <TableBodyCell
           >{product.name.length > 50
             ? product.name.slice(0, 50) + "..."
