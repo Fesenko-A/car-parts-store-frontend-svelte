@@ -10,6 +10,10 @@
     .toFixed(2);
 </script>
 
+<svelte:head>
+  <title>Shopping Cart</title>
+</svelte:head>
+
 <div class="max-w-6xl mx-auto p-4 sm:p-6 pb-28 relative">
   {#if cartItems.length === 0}
     <div class="text-center py-16">

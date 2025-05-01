@@ -12,4 +12,8 @@
   }
 </script>
 
+<svelte:head>
+  <title>Order #{order.id}</title>
+</svelte:head>
+
 <OrderDetails {order} />

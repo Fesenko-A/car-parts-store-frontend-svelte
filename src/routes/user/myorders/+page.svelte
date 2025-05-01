@@ -32,6 +32,10 @@
   };
 </script>
 
+<svelte:head>
+  <title>My orders</title>
+</svelte:head>
+
 <div class="flex justify-end mt-1 me-1">
   <Button class="h-10">
     {#if filters.status === ""}

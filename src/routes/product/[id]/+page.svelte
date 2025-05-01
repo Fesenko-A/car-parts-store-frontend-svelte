@@ -7,6 +7,10 @@
   };
 </script>
 
+<svelte:head>
+  <title>{data.product.name}</title>
+</svelte:head>
+
 {#if data.product}
   <div class="flex flex-col lg:flex-row gap-8 p-8 max-w-7xl mx-auto">
     <div class="lg:w-2/5 w-full flex justify-center items-start">

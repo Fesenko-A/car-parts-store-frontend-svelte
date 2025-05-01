@@ -15,6 +15,10 @@
   let type = "brand";
 </script>
 
+<svelte:head>
+  <title>Product details</title>
+</svelte:head>
+
 <Tabs class="m-2" contentClass="bg-white m-2" tabStyle="pill">
   <TabItem
     open

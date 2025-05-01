@@ -10,6 +10,10 @@
   const confirmOrder = () => {};
 </script>
 
+<svelte:head>
+  <title>Checkout</title>
+</svelte:head>
+
 <div class="max-w-2xl mx-auto p-4 space-y-6">
   <script>
     import { Label, Input } from "flowbite-svelte";

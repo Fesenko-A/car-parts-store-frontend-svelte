@@ -46,6 +46,10 @@
   };
 </script>
 
+<svelte:head>
+  <title>All orders</title>
+</svelte:head>
+
 <div
   class="flex flex-col sm:flex-row justify-end gap-2 p-2 rounded-lg shadow-sm"
 >

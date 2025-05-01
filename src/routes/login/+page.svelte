@@ -19,6 +19,10 @@
   };
 </script>
 
+<svelte:head>
+  <title>Login</title>
+</svelte:head>
+
 <div class="flex flex-col items-center justify-center mt-10 p-4">
   <div class="w-full max-w-md space-y-2">
     <h1 class="text-2xl font-bold text-center">Login</h1>

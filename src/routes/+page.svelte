@@ -49,6 +49,10 @@
   let helper = { start: 1, end: 10, total: 100 };
 </script>
 
+<svelte:head>
+  <title>DriveLine Car Products</title>
+</svelte:head>
+
 <div class="m-3 flex items-center">
   <Button on:click={() => (hidden2 = false)}>
     <FilterOutline />
