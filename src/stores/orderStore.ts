@@ -60,7 +60,7 @@ function generateFakeOrders(count: number): Order[] {
       paymentMethod: i % 2 == 0 ? PAYMENT_METHODS.CASH : PAYMENT_METHODS.ONLINE,
       orderDate: new Date(Date.now() - i * 86400000),
       lastUpdate: new Date(Date.now() - i * 43200000),
-      paid: true,
+      paid: i % 3 == 0 ? true : false,
       orderDetails: [],
       orderTotal: parseFloat(total.toFixed(2)),
       totalItems: orderDetails.reduce((sum, d) => sum + d.quantity, 0),
