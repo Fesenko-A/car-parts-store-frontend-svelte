@@ -9,7 +9,7 @@ export const ORDER_STATUS = {
   PROCESSING: "Processing",
   READY: "Ready for Pickup",
   COMPLETED: "Completed",
-  CANCELED: "Canceled",
+  CANCELLED: "Cancelled",
 };
 
 export const PAYMENT_STATUS = {

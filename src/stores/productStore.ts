@@ -18,7 +18,7 @@ export const products = writable<Product[]>([
       id: 1,
       name: "Oils",
     },
-    inStock: true,
+    inStock: false,
     initialPrice: 47.49,
     discountPercentage: 0,
     finalPrice: 47.49,

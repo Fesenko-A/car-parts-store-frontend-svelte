@@ -28,7 +28,9 @@
     specialTags,
     categories,
   } from "../stores/productDetailsStore";
-  import { products } from "../stores/productStore";
+  import { onMount } from "svelte";
+  import { apiFetch } from "../api";
+  import { fade } from "svelte/transition";
 
   let hidden2 = true;
   let transitionParams = {
@@ -37,12 +39,25 @@
     easing: sineIn,
   };
 
-  let productsList: Product[] = [];
+  let productsData: any = null;
+  let productsLoading = true;
+  let errorMessage = "";
+
+  onMount(async () => {
+    try {
+      productsData = await apiFetch("/products/getAll");
+    } catch (err) {
+      errorMessage = (err as Error).message;
+    } finally {
+      productsLoading = false;
+    }
+    console.log(productsData);
+  });
+
   let brandsList: Brand[] = [];
   let specialTagsList: SpecialTag[] = [];
   let categoriesList: Category[] = [];
 
-  $: $products, (productsList = $products);
   $: $brands, (brandsList = $brands);
   $: $specialTags, (specialTagsList = $specialTags);
   $: $categories, (categoriesList = $brands);
@@ -136,13 +151,20 @@
 </Drawer>
 <p class="text-center font-semibold text-lg">Search results for ...</p>
 
-<div
-  class="grid 2xl:grid-cols-5 xl:grid-cols-4 xl:gap-4 xl:mx-28 lg:grid-cols-3 lg:gap-5 lg:mx-24 md:mx-20 sm:grid-cols-2 gap-4 mx-10 grid-cols-1 mt-5 mb-5 place-items-center"
->
-  {#each productsList as product (product.id)}
-    <ProductCard {product} />
-  {/each}
-</div>
+{#if productsLoading}
+  <p>Loading products...</p>
+{:else if productsData}
+  <div
+    transition:fade={{ duration: 300 }}
+    class="grid 2xl:grid-cols-5 xl:grid-cols-4 xl:gap-4 xl:mx-28 lg:grid-cols-3 lg:gap-5 lg:mx-24 md:mx-20 sm:grid-cols-2 gap-4 mx-10 grid-cols-1 mt-5 mb-5 place-items-center"
+  >
+    {#each productsData.result as product}
+      <ProductCard {product} />
+    {/each}
+  </div>
+{:else}
+  <p>{errorMessage || "Failed to load products"}</p>
+{/if}
 
 <div class="flex flex-col items-center justify-center gap-2 mb-2">
   <div class="text-sm text-gray-700">

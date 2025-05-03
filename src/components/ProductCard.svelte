@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Badge, Button, Card } from "flowbite-svelte";
+  import { Badge, Button, Card, Tooltip } from "flowbite-svelte";
   import type { Product } from "../types";
   import { CartPlusAltSolid } from "flowbite-svelte-icons";
   import { formatCurrency } from "../utils/utils";
@@ -9,7 +9,6 @@
 
 <Card
   padding="none"
-  color="none"
   class="w-full h-full min-h-[400px] flex flex-col overflow-hidden hover:scale-[1.02] transition-transform duration-200 shadow-lg"
 >
   {#if product.specialTag != null}
@@ -48,9 +47,10 @@
           </span>
         {/if}
       </div>
-      <Button size="sm" class="flex-shrink-0">
+      <Button size="sm" disabled={!product.inStock} class="flex-shrink-0">
         <CartPlusAltSolid class="w-5 h-5" />
       </Button>
+      <Tooltip>{product.inStock ? "Add to cart" : "Out of stock"}</Tooltip>
     </div>
   </div>
 </Card>
