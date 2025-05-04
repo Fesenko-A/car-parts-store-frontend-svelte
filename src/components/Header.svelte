@@ -15,12 +15,23 @@
     SearchOutline,
     UserCircleSolid,
   } from "flowbite-svelte-icons";
+  import {
+    productFilters,
+    resetProductFilters,
+  } from "../stores/productFilters";
+  import { get } from "svelte/store";
+  import { goto } from "$app/navigation";
 
-  let searchQuery = $state("");
+  let searchQuery = "";
+
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      console.log("Searching for:", searchQuery);
-      // Add search logic
+      const current = get(productFilters);
+      productFilters.set({
+        ...current,
+        searchString: searchQuery,
+        pageNumber: 1,
+      });
     }
   };
 
@@ -29,6 +40,12 @@
       handleSearch();
     }
   };
+
+  const handleLogoClick = () => {
+    resetProductFilters();
+    searchQuery = "";
+    goto("/");
+  };
 </script>
 
 <Navbar
@@ -36,9 +53,15 @@
   class="flex items-center justify-between flex-wrap px-4 bg-slate-800"
 >
   <div class="flex items-center min-w-0">
-    <NavBrand href="/" class="flex items-center">
+    <a
+      href="/"
+      class="flex items-center"
+      on:click|preventDefault={handleLogoClick}
+      role="button"
+      aria-label="Go to home page"
+    >
       <img src="/driveline.png" class="me-3 h-6 sm:h-9" alt="DriveLine Logo" />
-    </NavBrand>
+    </a>
   </div>
 
   <div class="flex-1 flex justify-center px-2 min-w-0">

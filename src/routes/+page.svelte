@@ -23,10 +23,12 @@
   } from "flowbite-svelte-icons";
   import { sineIn } from "svelte/easing";
   import ProductCard from "../components/ProductCard.svelte";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { apiFetch } from "../api";
   import { fade } from "svelte/transition";
   import { toQueryString } from "../utils/utils";
+  import { productFilters } from "../stores/productFilters";
+  import { get } from "svelte/store";
 
   let transitionParams = {
     x: -320,
@@ -52,12 +54,28 @@
 
   let errorMessage = "";
 
-  onMount(async () => {
-    try {
+  let unsubscribe: () => void;
+
+  onMount(() => {
+    loadInitialData();
+
+    unsubscribe = productFilters.subscribe(() => {
       loadProducts();
-      loadCategories();
-      loadBrands();
-      loadSpecialTags();
+    });
+  });
+
+  onDestroy(() => {
+    unsubscribe?.();
+  });
+
+  async function loadInitialData() {
+    try {
+      await Promise.all([
+        loadCategories(),
+        loadBrands(),
+        loadSpecialTags(),
+        loadProducts(),
+      ]);
     } catch (err) {
       errorMessage = (err as Error).message;
     } finally {
@@ -66,30 +84,26 @@
       brandsLoading = false;
       specialTagsLoading = false;
     }
-  });
-
-  const productFilters = {
-    brands: [],
-    category: "",
-    specialTag: "",
-    searchString: "",
-    sortingOptions: "",
-    pageNumber: 1,
-    pageSize: 10,
-    outOfStock: true,
-    onlyWithDiscount: false,
-  };
+  }
 
   async function loadProducts() {
-    let query = toQueryString(productFilters);
-    products = await apiFetch(`/products/getAll?${query}`);
-    paginationHelper.start =
-      (productFilters.pageNumber - 1) * productFilters.pageSize;
-    paginationHelper.end = Math.min(
-      productFilters.pageNumber * productFilters.pageSize,
-      products.pagination.totalRecords
-    );
-    paginationHelper.total = products.pagination.totalRecords;
+    try {
+      productsLoading = true;
+      const filters = get(productFilters);
+      const query = toQueryString(filters);
+      products = await apiFetch(`/products/getAll?${query}`);
+
+      paginationHelper.start = (filters.pageNumber - 1) * filters.pageSize;
+      paginationHelper.end = Math.min(
+        filters.pageNumber * filters.pageSize,
+        products.pagination.totalRecords
+      );
+      paginationHelper.total = products.pagination.totalRecords;
+    } catch (err) {
+      errorMessage = (err as Error).message;
+    } finally {
+      productsLoading = false;
+    }
   }
 
   async function loadCategories() {
@@ -104,7 +118,6 @@
     specialTags = await apiFetch("/specialTag/getAll");
   }
 
-  let currentPage = 1;
   const paginationHelper = {
     start: 0,
     end: 0,
@@ -112,22 +125,16 @@
   };
 
   const next = async () => {
+    const current = get(productFilters);
     if (paginationHelper.end < paginationHelper.total) {
-      currentPage += 1;
-      productFilters.pageNumber = currentPage;
-      productsLoading = true;
-      await loadProducts();
-      productsLoading = false;
+      productFilters.set({ ...current, pageNumber: current.pageNumber + 1 });
     }
   };
 
   const previous = async () => {
-    if (currentPage > 1) {
-      currentPage -= 1;
-      productFilters.pageNumber = currentPage;
-      productsLoading = true;
-      await loadProducts();
-      productsLoading = false;
+    const current = get(productFilters);
+    if (current.pageNumber > 1) {
+      productFilters.set({ ...current, pageNumber: current.pageNumber - 1 });
     }
   };
 </script>
@@ -233,7 +240,11 @@
     </SidebarWrapper>
   </Sidebar>
 </Drawer>
-<p class="text-center font-semibold text-lg">Search results for ...</p>
+{#if $productFilters.searchString.length > 0}
+  <p class="text-center font-semibold text-lg">
+    Search results for <span>"{$productFilters.searchString}"</span>
+  </p>
+{/if}
 
 {#if productsLoading}
   <div
