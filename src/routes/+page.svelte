@@ -40,17 +40,8 @@
   let brandsDropdownOpen = false;
   let specialTagsDropdownOpen = false;
 
-  let categoriesData: any = null;
-  let categoriesLoading = true;
-
-  let brands: any = null;
-  let brandsLoading = true;
-
-  let specialTags: any = null;
-  let specialTagsLoading = true;
-
-  let products: any = null;
-  let productsLoading = true;
+  let productsData: any = null;
+  let loading = true;
 
   let errorMessage = "";
 
@@ -70,52 +61,32 @@
 
   async function loadInitialData() {
     try {
-      await Promise.all([
-        loadCategories(),
-        loadBrands(),
-        loadSpecialTags(),
-        loadProducts(),
-      ]);
+      await loadProducts();
     } catch (err) {
       errorMessage = (err as Error).message;
     } finally {
-      productsLoading = false;
-      categoriesLoading = false;
-      brandsLoading = false;
-      specialTagsLoading = false;
+      loading = false;
     }
   }
 
   async function loadProducts() {
     try {
-      productsLoading = true;
+      loading = true;
       const filters = get(productFilters);
       const query = toQueryString(filters);
-      products = await apiFetch(`/products/getAll?${query}`);
+      productsData = await apiFetch(`/products/getAll?${query}`);
 
       paginationHelper.start = (filters.pageNumber - 1) * filters.pageSize;
       paginationHelper.end = Math.min(
         filters.pageNumber * filters.pageSize,
-        products.pagination.totalRecords
+        productsData.pagination.totalRecords
       );
-      paginationHelper.total = products.pagination.totalRecords;
+      paginationHelper.total = productsData.pagination.totalRecords;
     } catch (err) {
       errorMessage = (err as Error).message;
     } finally {
-      productsLoading = false;
+      loading = false;
     }
-  }
-
-  async function loadCategories() {
-    categoriesData = await apiFetch("/category/getAll");
-  }
-
-  async function loadBrands() {
-    brands = await apiFetch("/brand/getAll");
-  }
-
-  async function loadSpecialTags() {
-    specialTags = await apiFetch("/specialTag/getAll");
   }
 
   const paginationHelper = {
@@ -143,12 +114,14 @@
   <title>DriveLine Car Products</title>
 </svelte:head>
 
-<div class="m-3 flex items-center">
-  <Button on:click={() => (filtersDrawerHidden = false)}>
-    <FilterOutline />
-    Filters
-  </Button>
-</div>
+{#if !loading}
+  <div class="m-3 flex items-center" transition:fade={{ duration: 500 }}>
+    <Button on:click={() => (filtersDrawerHidden = false)}>
+      <FilterOutline />
+      Filters
+    </Button>
+  </div>
+{/if}
 <Drawer
   transitionType="fly"
   {transitionParams}
@@ -186,10 +159,10 @@
               class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
             />
           </svelte:fragment>
-          {#if categoriesLoading}
+          {#if loading}
             <SidebarDropdownItem label="Loading..." />
-          {:else if categoriesData}
-            {#each categoriesData.data as category (category.id)}
+          {:else if productsData}
+            {#each productsData.relatedCategories as category (category.id)}
               <SidebarDropdownItem label={category.name} />
             {/each}
           {/if}
@@ -200,10 +173,10 @@
               class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
             />
           </svelte:fragment>
-          {#if brandsLoading}
+          {#if loading}
             <SidebarDropdownItem label="Loading..." />
-          {:else if brands}
-            {#each brands.data as brand (brand.id)}
+          {:else if productsData}
+            {#each productsData.relatedBrands as brand (brand.id)}
               <SidebarDropdownItem label={brand.name} />
             {/each}
           {/if}
@@ -217,10 +190,10 @@
               class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
             />
           </svelte:fragment>
-          {#if specialTagsLoading}
+          {#if loading}
             <SidebarDropdownItem label="Loading..." />
-          {:else if specialTags}
-            {#each specialTags.data as specialTag (specialTag.id)}
+          {:else if productsData}
+            {#each productsData.relatedSpecialTags as specialTag (specialTag.id)}
               <SidebarDropdownItem label={specialTag.name} />
             {/each}
           {/if}
@@ -246,7 +219,7 @@
   </p>
 {/if}
 
-{#if productsLoading}
+{#if loading}
   <div
     in:fade={{ duration: 200 }}
     out:fade={{ duration: 100 }}
@@ -257,12 +230,12 @@
       class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
     />
   </div>
-{:else if products}
+{:else if productsData}
   <div
     transition:fade={{ duration: 500 }}
     class="grid 2xl:grid-cols-5 xl:grid-cols-4 xl:gap-4 xl:mx-28 lg:grid-cols-3 lg:gap-5 lg:mx-24 md:mx-20 sm:grid-cols-2 gap-4 mx-10 grid-cols-1 mt-5 mb-5 place-items-center"
   >
-    {#each products.data as product}
+    {#each productsData.result as product}
       <ProductCard {product} />
     {/each}
   </div>

@@ -18,7 +18,7 @@ export async function apiFetch(endpoint: string, options = {}) {
       throw new Error(json.errorMessage || "Unknown API error");
     }
 
-    return json;
+    return json.data;
   } catch (error) {
     console.error("API fetch error:", error);
     throw error;
