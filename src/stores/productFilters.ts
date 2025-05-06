@@ -1,9 +1,9 @@
 import { writable } from "svelte/store";
 
 export const defaultFilters: {
-  categoryId: number | null;
-  brands: number[];
-  specialTags: number[];
+  category: string;
+  brands: string[];
+  specialTags: string[];
   searchString: string;
   sortingOptions: string;
   pageNumber: number;
@@ -11,7 +11,7 @@ export const defaultFilters: {
   outOfStock: boolean;
   onlyWithDiscount: boolean;
 } = {
-  categoryId: null,
+  category: "",
   brands: [],
   specialTags: [],
   searchString: "",

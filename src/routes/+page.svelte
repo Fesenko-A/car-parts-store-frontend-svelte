@@ -27,7 +27,10 @@
   import { apiFetch } from "../api";
   import { fade } from "svelte/transition";
   import { toQueryString } from "../utils/utils";
-  import { productFilters } from "../stores/productFilters";
+  import {
+    productFilters,
+    resetProductFilters,
+  } from "../stores/productFilters";
   import { get } from "svelte/store";
 
   let transitionParams = {
@@ -41,7 +44,11 @@
   let specialTagsDropdownOpen = false;
 
   let productsData: any = null;
+  let allRelatedBrands: any[] = [];
+  let allRelatedSpecialTags: any[] = [];
   let loading = true;
+
+  let categorySelected = false;
 
   let errorMessage = "";
 
@@ -76,6 +83,20 @@
       const query = toQueryString(filters);
       productsData = await apiFetch(`/products/getAll?${query}`);
 
+      if (filters.category) {
+        categorySelected = true;
+        if (filters.brands?.length === 0) {
+          allRelatedBrands = productsData.relatedBrands;
+        }
+        if (filters.specialTags?.length === 0) {
+          allRelatedSpecialTags = productsData.relatedSpecialTags;
+        }
+      } else {
+        categorySelected = false;
+        allRelatedBrands = [];
+        allRelatedSpecialTags = [];
+      }
+
       paginationHelper.start = (filters.pageNumber - 1) * filters.pageSize;
       paginationHelper.end = Math.min(
         filters.pageNumber * filters.pageSize,
@@ -87,6 +108,46 @@
     } finally {
       loading = false;
     }
+  }
+
+  function resetFilters() {
+    resetProductFilters();
+    categoriesDropdownOpen = true;
+    brandsDropdownOpen = false;
+    specialTagsDropdownOpen = false;
+  }
+
+  function selectCategory(category: string) {
+    const current = get(productFilters);
+    productFilters.set({ ...current, category, pageNumber: 1 });
+    categoriesDropdownOpen = false;
+    brandsDropdownOpen = true;
+  }
+
+  function selectBrand(brand: string) {
+    const current = get(productFilters);
+    const currentBrands = current.brands ?? [];
+
+    const updatedBrands = currentBrands.includes(brand)
+      ? currentBrands.filter((b) => b !== brand)
+      : [...currentBrands, brand];
+
+    productFilters.set({ ...current, brands: updatedBrands, pageNumber: 1 });
+  }
+
+  function selectSpecialTag(specialTag: string) {
+    const current = get(productFilters);
+    const currentSpecialTags = current.specialTags ?? [];
+
+    const updatedSpecialTags = currentSpecialTags.includes(specialTag)
+      ? currentSpecialTags.filter((b) => b !== specialTag)
+      : [...currentSpecialTags, specialTag];
+
+    productFilters.set({
+      ...current,
+      specialTags: updatedSpecialTags,
+      pageNumber: 1,
+    });
   }
 
   const paginationHelper = {
@@ -136,7 +197,7 @@
       Filters
     </h5>
     <div class="dark:text-white ms-auto items-center">
-      <Button on:click={() => (filtersDrawerHidden = false)} class="w-2">
+      <Button on:click={resetFilters} class="w-2">
         <RefreshOutline />
       </Button>
       <Tooltip>Reset filters</Tooltip>
@@ -151,7 +212,7 @@
     >
       <SidebarGroup>
         <SidebarDropdownWrapper
-          isOpen={categoriesDropdownOpen}
+          bind:isOpen={categoriesDropdownOpen}
           label="Categories"
         >
           <svelte:fragment slot="icon">
@@ -162,51 +223,94 @@
           {#if loading}
             <SidebarDropdownItem label="Loading..." />
           {:else if productsData}
-            {#each productsData.relatedCategories as category (category.id)}
-              <SidebarDropdownItem label={category.name} />
+            {#each productsData.relatedCategories as category}
+              <SidebarDropdownItem
+                label={category.name}
+                on:click={() => selectCategory(category.name)}
+              />
             {/each}
           {/if}
         </SidebarDropdownWrapper>
-        <SidebarDropdownWrapper label="Brands" isOpen={brandsDropdownOpen}>
-          <svelte:fragment slot="icon">
-            <LabelSolid
-              class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-            />
-          </svelte:fragment>
-          {#if loading}
-            <SidebarDropdownItem label="Loading..." />
-          {:else if productsData}
-            {#each productsData.relatedBrands as brand (brand.id)}
-              <SidebarDropdownItem label={brand.name} />
-            {/each}
-          {/if}
-        </SidebarDropdownWrapper>
-        <SidebarDropdownWrapper
-          label="Special Tags"
-          isOpen={specialTagsDropdownOpen}
-        >
-          <svelte:fragment slot="icon">
-            <TagSolid
-              class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-            />
-          </svelte:fragment>
-          {#if loading}
-            <SidebarDropdownItem label="Loading..." />
-          {:else if productsData}
-            {#each productsData.relatedSpecialTags as specialTag (specialTag.id)}
-              <SidebarDropdownItem label={specialTag.name} />
-            {/each}
-          {/if}
-        </SidebarDropdownWrapper>
-        <SidebarDropdownWrapper label="Sort by">
-          <svelte:fragment slot="icon">
-            <SortOutline
-              class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-            />
-          </svelte:fragment>
-          <SidebarDropdownItem label="Price: highest" />
-          <SidebarDropdownItem label="Price: lowest" />
-        </SidebarDropdownWrapper>
+        {#if categorySelected}
+          <SidebarDropdownWrapper
+            label="Brands"
+            bind:isOpen={brandsDropdownOpen}
+          >
+            <svelte:fragment slot="icon">
+              <LabelSolid
+                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+              />
+            </svelte:fragment>
+            {#if loading}
+              <SidebarDropdownItem label="Loading..." />
+            {:else if productsData}
+              {#each allRelatedBrands as brand}
+                <SidebarDropdownItem
+                  label={brand.name}
+                  on:click={() => selectBrand(brand.name)}
+                />
+              {/each}
+            {/if}
+          </SidebarDropdownWrapper>
+          <SidebarDropdownWrapper
+            label="Special Tags"
+            bind:isOpen={specialTagsDropdownOpen}
+          >
+            <svelte:fragment slot="icon">
+              <TagSolid
+                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+              />
+            </svelte:fragment>
+            {#if loading}
+              <SidebarDropdownItem label="Loading..." />
+            {:else if productsData}
+              {#each allRelatedSpecialTags as specialTag}
+                <SidebarDropdownItem
+                  label={specialTag.name}
+                  on:click={() => selectSpecialTag(specialTag.name)}
+                />
+              {/each}
+            {/if}
+          </SidebarDropdownWrapper>
+          <SidebarDropdownWrapper label="Sort by">
+            <svelte:fragment slot="icon">
+              <SortOutline
+                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+              />
+            </svelte:fragment>
+            <SidebarDropdownItem label="Price: highest" />
+            <SidebarDropdownItem label="Price: lowest" />
+          </SidebarDropdownWrapper>
+        {:else}
+          <SidebarDropdownWrapper label="Brands" class="bg-gray-100" disabled>
+            <svelte:fragment slot="icon">
+              <LabelSolid
+                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+              />
+            </svelte:fragment>
+          </SidebarDropdownWrapper>
+          <Tooltip>Select category first</Tooltip><SidebarDropdownWrapper
+            label="Special tags"
+            class="bg-gray-100"
+            disabled
+          >
+            <svelte:fragment slot="icon">
+              <TagSolid
+                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+              />
+            </svelte:fragment>
+          </SidebarDropdownWrapper>
+          <Tooltip>Select category first</Tooltip>
+          <SidebarDropdownWrapper label="Sort by" class="bg-gray-100" disabled>
+            <svelte:fragment slot="icon">
+              <SortOutline
+                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+              />
+            </svelte:fragment>
+          </SidebarDropdownWrapper>
+          <Tooltip>Select category first</Tooltip>
+        {/if}
+
         <Toggle class="mt-3">Include out of stock</Toggle>
         <Toggle class="mt-3">Discount only</Toggle>
       </SidebarGroup>
