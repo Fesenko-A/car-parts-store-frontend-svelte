@@ -1,52 +1,20 @@
 <script lang="ts">
-  import {
-    Button,
-    Drawer,
-    Sidebar,
-    SidebarDropdownItem,
-    SidebarDropdownWrapper,
-    SidebarGroup,
-    SidebarWrapper,
-    Toggle,
-    Tooltip,
-    Pagination,
-    Spinner,
-  } from "flowbite-svelte";
-  import {
-    GridSolid,
-    LabelSolid,
-    TagSolid,
-    FilterOutline,
-    RefreshOutline,
-    CloseOutline,
-    SortOutline,
-  } from "flowbite-svelte-icons";
-  import { sineIn } from "svelte/easing";
+  import { Button, Pagination, Spinner } from "flowbite-svelte";
+  import { FilterOutline } from "flowbite-svelte-icons";
   import ProductCard from "../components/ProductCard.svelte";
   import { onDestroy, onMount } from "svelte";
   import { apiFetch } from "../api";
   import { fade } from "svelte/transition";
   import { toQueryString } from "../utils/utils";
-  import {
-    productFilters,
-    resetProductFilters,
-  } from "../stores/productFilters";
+  import { productFilters } from "../stores/productFilters";
   import { get } from "svelte/store";
-
-  let transitionParams = {
-    x: -320,
-    duration: 200,
-    easing: sineIn,
-  };
-  let filtersDrawerHidden = true;
-  let categoriesDropdownOpen = true;
-  let brandsDropdownOpen = false;
-  let specialTagsDropdownOpen = false;
+  import ProductFiltersDrawer from "../components/ProductFiltersDrawer.svelte";
 
   let productsData: any = null;
   let allRelatedBrands: any[] = [];
   let allRelatedSpecialTags: any[] = [];
   let loading = true;
+  let filtersDrawerHidden: boolean = true;
 
   let categorySelected = false;
 
@@ -110,46 +78,6 @@
     }
   }
 
-  function resetFilters() {
-    resetProductFilters();
-    categoriesDropdownOpen = true;
-    brandsDropdownOpen = false;
-    specialTagsDropdownOpen = false;
-  }
-
-  function selectCategory(category: string) {
-    const current = get(productFilters);
-    productFilters.set({ ...current, category, pageNumber: 1 });
-    categoriesDropdownOpen = false;
-    brandsDropdownOpen = true;
-  }
-
-  function selectBrand(brand: string) {
-    const current = get(productFilters);
-    const currentBrands = current.brands ?? [];
-
-    const updatedBrands = currentBrands.includes(brand)
-      ? currentBrands.filter((b) => b !== brand)
-      : [...currentBrands, brand];
-
-    productFilters.set({ ...current, brands: updatedBrands, pageNumber: 1 });
-  }
-
-  function selectSpecialTag(specialTag: string) {
-    const current = get(productFilters);
-    const currentSpecialTags = current.specialTags ?? [];
-
-    const updatedSpecialTags = currentSpecialTags.includes(specialTag)
-      ? currentSpecialTags.filter((b) => b !== specialTag)
-      : [...currentSpecialTags, specialTag];
-
-    productFilters.set({
-      ...current,
-      specialTags: updatedSpecialTags,
-      pageNumber: 1,
-    });
-  }
-
   const paginationHelper = {
     start: 0,
     end: 0,
@@ -182,141 +110,16 @@
       Filters
     </Button>
   </div>
+  <ProductFiltersDrawer
+    bind:hidden={filtersDrawerHidden}
+    {productsData}
+    {loading}
+    {categorySelected}
+    {allRelatedBrands}
+    {allRelatedSpecialTags}
+  />
 {/if}
-<Drawer
-  transitionType="fly"
-  {transitionParams}
-  bind:hidden={filtersDrawerHidden}
-  id="sidebar2"
->
-  <div class="flex items-center">
-    <h5
-      id="drawer-navigation-label-3"
-      class="text-base font-semibold text-gray-500 uppercase dark:text-gray-400"
-    >
-      Filters
-    </h5>
-    <div class="dark:text-white ms-auto items-center">
-      <Button on:click={resetFilters} class="w-2">
-        <RefreshOutline />
-      </Button>
-      <Tooltip>Reset filters</Tooltip>
-      <Button on:click={() => (filtersDrawerHidden = true)} class="w-2">
-        <CloseOutline />
-      </Button>
-    </div>
-  </div>
-  <Sidebar>
-    <SidebarWrapper
-      divClass="overflow-y-auto py-4 px-3 rounded-sm dark:bg-gray-800"
-    >
-      <SidebarGroup>
-        <SidebarDropdownWrapper
-          bind:isOpen={categoriesDropdownOpen}
-          label="Categories"
-        >
-          <svelte:fragment slot="icon">
-            <GridSolid
-              class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-            />
-          </svelte:fragment>
-          {#if loading}
-            <SidebarDropdownItem label="Loading..." />
-          {:else if productsData}
-            {#each productsData.relatedCategories as category}
-              <SidebarDropdownItem
-                label={category.name}
-                on:click={() => selectCategory(category.name)}
-              />
-            {/each}
-          {/if}
-        </SidebarDropdownWrapper>
-        {#if categorySelected}
-          <SidebarDropdownWrapper
-            label="Brands"
-            bind:isOpen={brandsDropdownOpen}
-          >
-            <svelte:fragment slot="icon">
-              <LabelSolid
-                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              />
-            </svelte:fragment>
-            {#if loading}
-              <SidebarDropdownItem label="Loading..." />
-            {:else if productsData}
-              {#each allRelatedBrands as brand}
-                <SidebarDropdownItem
-                  label={brand.name}
-                  on:click={() => selectBrand(brand.name)}
-                />
-              {/each}
-            {/if}
-          </SidebarDropdownWrapper>
-          <SidebarDropdownWrapper
-            label="Special Tags"
-            bind:isOpen={specialTagsDropdownOpen}
-          >
-            <svelte:fragment slot="icon">
-              <TagSolid
-                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              />
-            </svelte:fragment>
-            {#if loading}
-              <SidebarDropdownItem label="Loading..." />
-            {:else if productsData}
-              {#each allRelatedSpecialTags as specialTag}
-                <SidebarDropdownItem
-                  label={specialTag.name}
-                  on:click={() => selectSpecialTag(specialTag.name)}
-                />
-              {/each}
-            {/if}
-          </SidebarDropdownWrapper>
-          <SidebarDropdownWrapper label="Sort by">
-            <svelte:fragment slot="icon">
-              <SortOutline
-                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              />
-            </svelte:fragment>
-            <SidebarDropdownItem label="Price: highest" />
-            <SidebarDropdownItem label="Price: lowest" />
-          </SidebarDropdownWrapper>
-        {:else}
-          <SidebarDropdownWrapper label="Brands" class="bg-gray-100" disabled>
-            <svelte:fragment slot="icon">
-              <LabelSolid
-                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              />
-            </svelte:fragment>
-          </SidebarDropdownWrapper>
-          <Tooltip>Select category first</Tooltip><SidebarDropdownWrapper
-            label="Special tags"
-            class="bg-gray-100"
-            disabled
-          >
-            <svelte:fragment slot="icon">
-              <TagSolid
-                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              />
-            </svelte:fragment>
-          </SidebarDropdownWrapper>
-          <Tooltip>Select category first</Tooltip>
-          <SidebarDropdownWrapper label="Sort by" class="bg-gray-100" disabled>
-            <svelte:fragment slot="icon">
-              <SortOutline
-                class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-              />
-            </svelte:fragment>
-          </SidebarDropdownWrapper>
-          <Tooltip>Select category first</Tooltip>
-        {/if}
 
-        <Toggle class="mt-3">Include out of stock</Toggle>
-        <Toggle class="mt-3">Discount only</Toggle>
-      </SidebarGroup>
-    </SidebarWrapper>
-  </Sidebar>
-</Drawer>
 {#if $productFilters.searchString.length > 0}
   <p class="text-center font-semibold text-lg">
     Search results for <span>"{$productFilters.searchString}"</span>
