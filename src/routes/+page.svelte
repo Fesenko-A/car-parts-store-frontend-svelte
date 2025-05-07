@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { Button, Pagination, Spinner } from "flowbite-svelte";
+  import { Button, Spinner } from "flowbite-svelte";
   import { FilterOutline } from "flowbite-svelte-icons";
-  import ProductCard from "../components/ProductCard.svelte";
   import { onDestroy, onMount } from "svelte";
   import { apiFetch } from "../api";
   import { fade } from "svelte/transition";
   import { toQueryString } from "../utils/utils";
   import { productFilters } from "../stores/productFilters";
   import { get } from "svelte/store";
+  import ProductCard from "../components/ProductCard.svelte";
   import ProductFiltersDrawer from "../components/ProductFiltersDrawer.svelte";
+  import PaginationControl from "../components/PaginationControl.svelte";
 
   let productsData: any = null;
   let allRelatedBrands: any[] = [];
@@ -83,20 +84,6 @@
     end: 0,
     total: 0,
   };
-
-  const next = async () => {
-    const current = get(productFilters);
-    if (paginationHelper.end < paginationHelper.total) {
-      productFilters.set({ ...current, pageNumber: current.pageNumber + 1 });
-    }
-  };
-
-  const previous = async () => {
-    const current = get(productFilters);
-    if (current.pageNumber > 1) {
-      productFilters.set({ ...current, pageNumber: current.pageNumber - 1 });
-    }
-  };
 </script>
 
 <svelte:head>
@@ -147,26 +134,7 @@
     {/each}
   </div>
 
-  <div class="flex flex-col items-center justify-center gap-2 mb-2">
-    <div class="text-sm text-gray-700 dark:text-gray-400">
-      Showing <span class="font-semibold text-gray-900 dark:text-white"
-        >{paginationHelper.start}</span
-      >
-      to
-      <span class="font-semibold text-gray-900 dark:text-white"
-        >{paginationHelper.end}</span
-      >
-      of
-      <span class="font-semibold text-gray-900 dark:text-white"
-        >{paginationHelper.total}</span
-      >
-      Entries
-    </div>
-
-    <Pagination table on:previous={previous} on:next={next} pages={[]}>
-      <span slot="prev">Prev</span>
-    </Pagination>
-  </div>
+  <PaginationControl filters={productFilters} {paginationHelper} />
 {:else}
   <p>{errorMessage || "Failed to load products"}</p>
 {/if}

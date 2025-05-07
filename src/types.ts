@@ -83,3 +83,8 @@ export type OrderFilters = {
   pageNumber: number;
   pageSize: number;
 };
+
+export type PaginationFields = {
+  pageNumber: number;
+  pageSize: number;
+};
