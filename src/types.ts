@@ -88,3 +88,15 @@ export type PaginationFields = {
   pageNumber: number;
   pageSize: number;
 };
+
+export type ProductFilters = {
+  category: string;
+  brands: string[];
+  specialTags: string[];
+  searchString: string;
+  sortingOptions: string;
+  pageNumber: number;
+  pageSize: number;
+  outOfStock: boolean;
+  onlyWithDiscount: boolean;
+};

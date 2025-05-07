@@ -16,3 +16,8 @@ export const PAYMENT_STATUS = {
   PAID: "Paid",
   RETURNED: "Returned",
 };
+
+export const SORTING_FILTERS = {
+  PRICE_LOW_HIGH: "Price: Low to High",
+  PRICE_HIGH_LOW: "Price: High to Low",
+};

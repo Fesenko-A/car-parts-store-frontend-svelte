@@ -125,16 +125,21 @@
     />
   </div>
 {:else if productsData}
-  <div
-    transition:fade={{ duration: 500 }}
-    class="grid 2xl:grid-cols-5 xl:grid-cols-4 xl:gap-4 xl:mx-28 lg:grid-cols-3 lg:gap-5 lg:mx-24 md:mx-20 sm:grid-cols-2 gap-4 mx-10 grid-cols-1 mt-5 mb-5 place-items-center"
-  >
-    {#each productsData.result as product}
-      <ProductCard {product} />
-    {/each}
-  </div>
-
-  <PaginationControl filters={productFilters} {paginationHelper} />
+  {#if productsData.result.length > 0}
+    <div
+      transition:fade={{ duration: 500 }}
+      class="grid 2xl:grid-cols-5 xl:grid-cols-4 xl:gap-4 xl:mx-28 lg:grid-cols-3 lg:gap-5 lg:mx-24 md:mx-20 sm:grid-cols-2 gap-4 mx-10 grid-cols-1 mt-5 mb-5 place-items-center"
+    >
+      {#each productsData.result as product}
+        <ProductCard {product} />
+      {/each}
+    </div>
+    <PaginationControl filters={productFilters} {paginationHelper} />
+  {:else}
+    <p class="text-center">
+      No products to display :( Try to apply different filters
+    </p>
+  {/if}
 {:else}
   <p>{errorMessage || "Failed to load products"}</p>
 {/if}

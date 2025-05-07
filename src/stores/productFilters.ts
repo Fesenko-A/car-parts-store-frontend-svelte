@@ -1,16 +1,7 @@
 import { writable } from "svelte/store";
+import type { ProductFilters } from "../types";
 
-export const defaultFilters: {
-  category: string;
-  brands: string[];
-  specialTags: string[];
-  searchString: string;
-  sortingOptions: string;
-  pageNumber: number;
-  pageSize: number;
-  outOfStock: boolean;
-  onlyWithDiscount: boolean;
-} = {
+export const defaultFilters: ProductFilters = {
   category: "",
   brands: [],
   specialTags: [],
@@ -18,7 +9,7 @@ export const defaultFilters: {
   sortingOptions: "",
   pageNumber: 1,
   pageSize: 10,
-  outOfStock: true,
+  outOfStock: false,
   onlyWithDiscount: false,
 };
 
