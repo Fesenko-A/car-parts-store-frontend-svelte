@@ -12,7 +12,7 @@
   } from "flowbite-svelte";
   import { products } from "../../../stores/productStore";
   import type { Product } from "../../../types";
-  import { formatCurrency } from "../../../utils/utils";
+  import { formatCurrency } from "$lib";
   import {
     EditOutline,
     PlusOutline,

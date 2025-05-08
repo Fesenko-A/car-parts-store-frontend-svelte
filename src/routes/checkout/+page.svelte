@@ -2,7 +2,7 @@
   import { Label, Input, Radio, Button } from "flowbite-svelte";
   import { PhoneSolid, UserSolid } from "flowbite-svelte-icons";
   import { PAYMENT_METHODS } from "../../constants";
-  import { formatCurrency } from "../../utils/utils";
+  import { formatCurrency } from "$lib";
 
   let pickupPhone = "";
   let pickupName = "";

@@ -7,7 +7,7 @@
     TableHead,
     TableHeadCell,
   } from "flowbite-svelte";
-  import { formatCurrency, formatDate } from "../utils/utils";
+  import { formatCurrency, formatDate } from "$lib";
   import { goto } from "$app/navigation";
 
   export let orders: any[] = [];

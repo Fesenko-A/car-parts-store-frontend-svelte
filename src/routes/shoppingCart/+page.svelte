@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from "flowbite-svelte";
   import { cart, removeFromCart, updateQuantity } from "../../stores/cartStore";
-  import { formatCurrency } from "../../utils/utils";
+  import { formatCurrency } from "$lib";
   import { CartOutline } from "flowbite-svelte-icons";
 
   let cartItems = $cart;

@@ -55,7 +55,7 @@ function generateFakeOrders(count: number): Order[] {
         ORDER_STATUS.PROCESSING,
         ORDER_STATUS.READY,
         ORDER_STATUS.COMPLETED,
-        ORDER_STATUS.CANCELED,
+        ORDER_STATUS.CANCELLED,
       ][i % 6],
       paymentMethod: i % 2 == 0 ? PAYMENT_METHODS.CASH : PAYMENT_METHODS.ONLINE,
       orderDate: new Date(Date.now() - i * 86400000),

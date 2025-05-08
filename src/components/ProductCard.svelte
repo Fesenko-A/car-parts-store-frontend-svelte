@@ -2,7 +2,7 @@
   import { Badge, Button, Card, Tooltip } from "flowbite-svelte";
   import type { Product } from "../types";
   import { CartPlusAltSolid } from "flowbite-svelte-icons";
-  import { formatCurrency } from "../utils/utils";
+  import { formatCurrency } from "$lib";
 
   export let product: Product;
 </script>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formatCurrency, formatDate } from "../utils/utils";
+  import { formatCurrency, formatDate } from "$lib";
   import {
     Table,
     TableHead,
@@ -25,7 +25,7 @@
     ORDER_STATUS.PROCESSING,
     ORDER_STATUS.READY,
     ORDER_STATUS.COMPLETED,
-    ORDER_STATUS.CANCELED,
+    ORDER_STATUS.CANCELLED,
   ];
 
   function handleOrderStatusChange(newStatus: string) {

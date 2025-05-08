@@ -2,14 +2,13 @@
   import { Button, Spinner } from "flowbite-svelte";
   import { FilterOutline } from "flowbite-svelte-icons";
   import { onDestroy, onMount } from "svelte";
-  import { apiFetch } from "../api";
   import { fade } from "svelte/transition";
-  import { toQueryString } from "../utils/utils";
   import { productFilters } from "../stores/productFilters";
   import { get } from "svelte/store";
   import ProductCard from "../components/ProductCard.svelte";
   import ProductFiltersDrawer from "../components/ProductFiltersDrawer.svelte";
   import PaginationControl from "../components/PaginationControl.svelte";
+  import { toQueryString, apiFetch } from "$lib";
 
   let productsData: any = null;
   let allRelatedBrands: any[] = [];

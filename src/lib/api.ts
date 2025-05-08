@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./config";
+const API_BASE_URL = "https://localhost:5001/api";
 
 export async function apiFetch(endpoint: string, options = {}) {
   try {

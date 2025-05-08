@@ -9,8 +9,7 @@
   } from "flowbite-svelte";
   import type { Product } from "../../../types";
   import { onMount } from "svelte";
-  import { apiFetch } from "../../../api";
-  import { formatCurrency } from "../../../utils/utils";
+  import { apiFetch, formatCurrency } from "$lib";
 
   let product: Product | null = null;
 
