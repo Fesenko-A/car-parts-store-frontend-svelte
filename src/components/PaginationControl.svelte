@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Pagination } from "flowbite-svelte";
+  import { Button } from "flowbite-svelte";
   import { get, type Writable } from "svelte/store";
   import type { PaginationFields } from "../types";
+  import { ArrowLeftOutline, ArrowRightOutline } from "flowbite-svelte-icons";
 
   export let filters: Writable<PaginationFields>;
   export let paginationHelper: {
@@ -9,6 +10,9 @@
     end: number;
     total: number;
   };
+
+  let disabledPrev = paginationHelper.start == 0;
+  let disabledNext = paginationHelper.end == paginationHelper.total;
 
   const next = () => {
     const current = get(filters);
@@ -41,8 +45,14 @@
     Entries
   </div>
 
-  <Pagination table on:previous={previous} on:next={next} pages={[]}>
-    <span slot="prev">Prev</span>
-    <span slot="next">Next</span>
-  </Pagination>
+  <div class="flex space-x-1 rtl:space-x-reverse">
+    <Button class="h-9 p-3" on:click={previous} disabled={disabledPrev}>
+      <ArrowLeftOutline />
+      Prev
+    </Button>
+    <Button class="h-9 p-3" on:click={next} disabled={disabledNext}>
+      Next
+      <ArrowRightOutline />
+    </Button>
+  </div>
 </div>
