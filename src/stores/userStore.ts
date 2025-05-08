@@ -1,6 +1,7 @@
-import { writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 import type { User } from "../types";
 
+// fake
 export const users = writable<User[]>([
   {
     id: "u1",
@@ -19,3 +20,7 @@ export const users = writable<User[]>([
     role: "Customer",
   },
 ]);
+
+// real
+export const user = writable<User | null>(null);
+export const isAdmin = derived(user, ($user) => $user?.role === "Admin");

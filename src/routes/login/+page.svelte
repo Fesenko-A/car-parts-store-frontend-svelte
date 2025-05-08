@@ -1,21 +1,26 @@
 <script lang="ts">
   import { Input, Button } from "flowbite-svelte";
+  import { login } from "$lib";
+  import { goto } from "$app/navigation";
 
   let email = "";
   let password = "";
 
-  let emailValid = false;
+  let loading = false;
+  let errorMessage: string | null = null;
 
-  const validateEmail = () => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    emailValid = regex.test(email);
-    return emailValid;
-  };
+  const handleSubmit = async () => {
+    errorMessage = null;
 
-  const handleSubmit = () => {
-    const isEmailValid = validateEmail();
-
-    // Login logic here
+    loading = true;
+    try {
+      await login(email, password);
+      goto("/");
+    } catch (error) {
+      errorMessage = (error as Error).message || "Login failed";
+    } finally {
+      loading = false;
+    }
   };
 </script>
 
@@ -24,23 +29,20 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center mt-10 p-4">
-  <div class="w-full max-w-md space-y-2">
+  <form
+    class="w-full max-w-md space-y-4"
+    on:submit|preventDefault={handleSubmit}
+  >
     <h1 class="text-2xl font-bold text-center">Login</h1>
+
     <div>
       <Input
         bind:value={email}
-        on:blur={validateEmail}
         id="email"
-        type="email"
         placeholder="Email"
         class="w-full"
-        color={email && !emailValid ? "red" : "base"}
+        disabled={loading}
       />
-      {#if email && !emailValid}
-        <p class="mt-2 text-sm text-red-600">
-          Please enter a valid email address
-        </p>
-      {/if}
     </div>
 
     <div>
@@ -50,16 +52,25 @@
         type="password"
         placeholder="Password"
         class="w-full"
+        disabled={loading}
       />
     </div>
 
-    <Button on:click={handleSubmit} class="w-full" disabled={!emailValid}>
-      Login
+    {#if errorMessage}
+      <p class="text-red-600 text-sm">{errorMessage}</p>
+    {/if}
+
+    <Button type="submit" class="w-full" disabled={loading}>
+      {#if loading}
+        Logging in...
+      {:else}
+        Login
+      {/if}
     </Button>
-  </div>
+  </form>
+
   <p class="text-gray-500 mt-2">
-    Don't have an account? <a href="/register" class="underline"
-      >Register here</a
-    >
+    Don't have an account?
+    <a href="/register" class="underline">Register here</a>
   </p>
 </div>
