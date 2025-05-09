@@ -44,12 +44,8 @@
     }
   };
 
-  const resetFilters = async () => {
-    resetOrderFilters();
-    const current = get(orderFilters);
-    const userId = get(user)!.id;
-    orderFilters.set({ ...current, userId });
-    await loadOrders();
+  const resetFilters = () => {
+    resetOrderFilters(get(user)!.id);
   };
 
   const selectStatus = async (status: string) => {

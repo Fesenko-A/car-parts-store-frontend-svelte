@@ -11,6 +11,6 @@ export const defaultFilters: OrderFilters = {
 
 export const orderFilters = writable({ ...defaultFilters });
 
-export function resetOrderFilters() {
-  orderFilters.set({ ...defaultFilters });
+export function resetOrderFilters(userId: string = "") {
+  orderFilters.set({ ...defaultFilters, userId });
 }
