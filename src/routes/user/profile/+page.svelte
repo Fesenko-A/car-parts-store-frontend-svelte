@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, Label } from "flowbite-svelte";
-  import { user } from "../../../stores/userStore";
+  import { isAdmin, user } from "../../../stores/userStore";
   import {
     ArrowRightToBracketOutline,
     RefreshOutline,
@@ -87,6 +87,9 @@
         <ArrowRightToBracketOutline />
         Log out
       </Button>
+      {#if $isAdmin}
+        <Button href="/admin" class="p-3">Admin panel</Button>
+      {/if}
     </div>
   {:else}
     <p class="text-center">Redirecting...</p>

@@ -98,24 +98,36 @@
   </div>
 
   <NavUl class="items-center space-x-3">
-    <NavLi href="/shoppingCart" class="flex items-center">
-      <CartOutline size="lg" class="hidden md:block header-button" />
-      <span class="block md:hidden ps-2">Cart</span>
-    </NavLi>
-    <NavLi href="/" class="flex items-center">
-      <InfoCircleOutline size="lg" class="hidden md:block header-button" />
-      <span class="block md:hidden ps-2">About</span>
-    </NavLi>
-    <NavLi href="/user/myorders" class="flex items-center">
-      <RectangleListSolid size="lg" class="hidden md:block header-button" />
-      <span class="block md:hidden ps-2">My orders</span></NavLi
-    >
     {#if $user}
+      <NavLi href="/shoppingCart" class="flex items-center">
+        <CartOutline size="lg" class="hidden md:block header-button" />
+        <span class="block md:hidden ps-2">Cart</span>
+      </NavLi>
+      <NavLi href="/" class="flex items-center">
+        <InfoCircleOutline size="lg" class="hidden md:block header-button" />
+        <span class="block md:hidden ps-2">About</span>
+      </NavLi>
+      <NavLi href="/user/myorders" class="flex items-center">
+        <RectangleListSolid size="lg" class="hidden md:block header-button" />
+        <span class="block md:hidden ps-2">My orders</span></NavLi
+      >
       <NavLi href="/user/profile" class="flex items-center">
         <UserCircleSolid size="lg" class="hidden md:block header-button" />
         <span class="block md:hidden ps-2">Profile</span>
       </NavLi>
     {:else}
+      <NavLi href="/login" class="flex items-center">
+        <CartOutline size="lg" class="hidden md:block header-button" />
+        <span class="block md:hidden ps-2">Cart</span>
+      </NavLi>
+      <NavLi href="/" class="flex items-center">
+        <InfoCircleOutline size="lg" class="hidden md:block header-button" />
+        <span class="block md:hidden ps-2">About</span>
+      </NavLi>
+      <NavLi href="/login" class="flex items-center">
+        <RectangleListSolid size="lg" class="hidden md:block header-button" />
+        <span class="block md:hidden ps-2">My orders</span></NavLi
+      >
       <NavLi href="/login" class="flex items-center">
         <ArrowLeftToBracketOutline
           size="lg"
