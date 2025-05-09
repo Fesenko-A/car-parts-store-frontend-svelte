@@ -54,11 +54,17 @@ export async function login(email: string, password: string) {
   localStorage.setItem("user", JSON.stringify(userData));
 }
 
-export async function register(email: string, password: string) {
+export async function register(
+  email: string,
+  firstName: string,
+  lastName: string,
+  phoneNumber: string,
+  password: string
+) {
   const res = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, firstName, lastName, phoneNumber, password }),
     credentials: "include",
   });
 

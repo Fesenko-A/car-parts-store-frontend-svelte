@@ -1,11 +1,22 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { register } from "$lib";
   import { Input, Button } from "flowbite-svelte";
 
   let email = "";
+  let firstName = "";
+  let lastName = "";
+  let phoneNumber = "";
   let password = "";
   let repeatPassword = "";
 
+  let loading = false;
+  let errorMessage: string | null = null;
+
   let emailValid = false;
+  let firstNameIsValid = false;
+  let lastNameIsValid = false;
+  let phoneIsValid = false;
   let passwordValid = false;
   let passwordsMatch = false;
 
@@ -13,6 +24,24 @@
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     emailValid = regex.test(email);
     return emailValid;
+  };
+
+  const validateFirstName = () => {
+    const regex = /^[A-Za-z-]+$/;
+    firstNameIsValid = regex.test(firstName);
+    return firstNameIsValid;
+  };
+
+  const validateLastName = () => {
+    const regex = /^[A-Za-z-]+$/;
+    lastNameIsValid = regex.test(lastName);
+    return lastNameIsValid;
+  };
+
+  const validatePhoneNumber = () => {
+    const regex = /^\+?[\d\-]{7,15}$/;
+    phoneIsValid = regex.test(phoneNumber);
+    return phoneIsValid;
   };
 
   const validatePassword = () => {
@@ -27,12 +56,18 @@
     return passwordsMatch;
   };
 
-  const handleSubmit = () => {
-    const isEmailValid = validateEmail();
-    const isPasswordValid = validatePassword();
-    const doPasswordsMatch = validateRepeatPassword();
+  const handleSubmit = async () => {
+    errorMessage = null;
 
-    // Registration logic here
+    loading = true;
+    try {
+      await register(email, firstName, lastName, phoneNumber, password);
+      goto("/");
+    } catch (error) {
+      errorMessage = (error as Error).message || "Register failed";
+    } finally {
+      loading = false;
+    }
   };
 </script>
 
@@ -41,7 +76,10 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center mt-10 p-4">
-  <div class="w-full max-w-md space-y-2">
+  <form
+    class="w-full max-w-md space-y-2"
+    on:submit|preventDefault={handleSubmit}
+  >
     <h1 class="text-2xl font-bold text-center">Register</h1>
     <div>
       <Input
@@ -56,6 +94,60 @@
       {#if email && !emailValid}
         <p class="mt-2 text-sm text-red-600">
           Please enter a valid email address
+        </p>
+      {/if}
+    </div>
+
+    <div>
+      <Input
+        bind:value={firstName}
+        on:blur={validateFirstName}
+        id="firstName"
+        type="text"
+        placeholder="First name"
+        class="w-full"
+        color={firstName && !firstNameIsValid ? "red" : "base"}
+      />
+      {#if firstName && !firstNameIsValid}
+        <p class="mt-2 text-sm text-red-600">
+          Please enter a valid first name (only letters and "-" symbol are
+          allowed)
+        </p>
+      {/if}
+    </div>
+
+    <div>
+      <Input
+        bind:value={lastName}
+        on:blur={validateLastName}
+        id="lastName"
+        type="text"
+        placeholder="Last name"
+        class="w-full"
+        color={lastName && !lastNameIsValid ? "red" : "base"}
+      />
+      {#if lastName && !lastNameIsValid}
+        <p class="mt-2 text-sm text-red-600">
+          Please enter a valid first name (only letters and "-" symbol are
+          allowed)
+        </p>
+      {/if}
+    </div>
+
+    <div>
+      <Input
+        bind:value={phoneNumber}
+        on:blur={validatePhoneNumber}
+        id="phoneNumber"
+        type="text"
+        placeholder="Phone number"
+        class="w-full"
+        color={lastName && !lastNameIsValid ? "red" : "base"}
+      />
+      {#if lastName && !lastNameIsValid}
+        <p class="mt-2 text-sm text-red-600">
+          Please enter a valid phone number (max 15 characters with no spaces, +
+          and () are allowed)
         </p>
       {/if}
     </div>
@@ -92,14 +184,18 @@
       {/if}
     </div>
 
+    {#if errorMessage}
+      <p class="text-red-600 text-sm">{errorMessage}</p>
+    {/if}
+
     <Button
-      on:click={handleSubmit}
+      type="submit"
       class="w-full"
       disabled={!emailValid || !passwordValid || !passwordsMatch}
     >
       Register
     </Button>
-  </div>
+  </form>
   <p class="text-gray-500 mt-2">
     Already have an account? <a href="/login" class="underline">Login here</a>
   </p>
