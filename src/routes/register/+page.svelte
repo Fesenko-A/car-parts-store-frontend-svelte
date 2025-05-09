@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { register } from "$lib";
   import { Input, Button } from "flowbite-svelte";
+  import toast from "svelte-french-toast";
 
   let email = "";
   let firstName = "";
@@ -63,8 +64,10 @@
     try {
       await register(email, firstName, lastName, phoneNumber, password);
       goto("/");
+      toast.success("Successfully registered and logged in!");
     } catch (error) {
       errorMessage = (error as Error).message || "Register failed";
+      toast.error(errorMessage);
     } finally {
       loading = false;
     }
@@ -183,10 +186,6 @@
         <p class="mt-2 text-sm text-red-600">Passwords do not match</p>
       {/if}
     </div>
-
-    {#if errorMessage}
-      <p class="text-red-600 text-sm">{errorMessage}</p>
-    {/if}
 
     <Button
       type="submit"

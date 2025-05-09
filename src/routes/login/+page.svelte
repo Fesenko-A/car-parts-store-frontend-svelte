@@ -2,6 +2,7 @@
   import { Input, Button } from "flowbite-svelte";
   import { login } from "$lib";
   import { goto } from "$app/navigation";
+  import toast from "svelte-french-toast";
 
   let email = "";
   let password = "";
@@ -16,8 +17,10 @@
     try {
       await login(email, password);
       goto("/");
+      toast.success("Successfully logged in!");
     } catch (error) {
       errorMessage = (error as Error).message || "Login failed";
+      toast.error(errorMessage);
     } finally {
       loading = false;
     }
@@ -42,6 +45,7 @@
         placeholder="Email"
         class="w-full"
         disabled={loading}
+        required
       />
     </div>
 
@@ -53,14 +57,11 @@
         placeholder="Password"
         class="w-full"
         disabled={loading}
+        required
       />
     </div>
 
-    {#if errorMessage}
-      <p class="text-red-600 text-sm">{errorMessage}</p>
-    {/if}
-
-    <Button type="submit" class="w-full" disabled={loading}>
+    <Button type="submit" class="w-full" disabled={!email || !password}>
       {#if loading}
         Logging in...
       {:else}

@@ -9,10 +9,12 @@
   import { logout } from "$lib";
   import { onMount } from "svelte";
   import UpdatePasswordModal from "../../../components/UpdatePasswordModal.svelte";
+  import toast from "svelte-french-toast";
 
   onMount(() => {
     if (!$user) {
       goto("/login");
+      toast.error("Please log in first");
     }
   });
 
@@ -78,6 +80,7 @@
         on:click={() => {
           logout();
           goto("/");
+          toast.success("Successfully logged out");
         }}
         class="p-3"
       >

@@ -35,8 +35,6 @@
 
   const sortingFilters = Object.values(SORTING_FILTERS);
 
-  $productFilters;
-
   let transitionParams = {
     x: -320,
     duration: 200,
