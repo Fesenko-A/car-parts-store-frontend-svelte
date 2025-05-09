@@ -27,7 +27,10 @@ export async function apiFetch(
     if (res.status === 401 && requiresAuth) {
       accessToken = await refreshAccessToken();
       headers["Authorization"] = `Bearer ${accessToken}`;
-      res = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+      res = await fetch(`${API_BASE_URL}${endpoint}`, {
+        ...options,
+        headers,
+      });
     }
 
     const text = await res.text();

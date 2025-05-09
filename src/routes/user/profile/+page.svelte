@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Input, Label, Modal } from "flowbite-svelte";
+  import { Button, Label } from "flowbite-svelte";
   import { user } from "../../../stores/userStore";
   import {
     ArrowRightToBracketOutline,
@@ -8,6 +8,7 @@
   import { goto } from "$app/navigation";
   import { logout } from "$lib";
   import { onMount } from "svelte";
+  import UpdatePasswordModal from "../../../components/UpdatePasswordModal.svelte";
 
   onMount(() => {
     if (!$user) {
@@ -16,27 +17,6 @@
   });
 
   let updatePasswordModal = false;
-  let oldPassword = "";
-  let newPassword = "";
-  let repeatPassword = "";
-  let passwordValid = false;
-  let passwordsMatch = false;
-
-  const updatePassword = () => {
-    updatePasswordModal = true;
-  };
-
-  const validatePassword = () => {
-    const hasMinLength = newPassword.length >= 8;
-    const hasNumber = /\d/.test(newPassword);
-    passwordValid = hasMinLength && hasNumber;
-    return passwordValid;
-  };
-
-  const validateRepeatPassword = () => {
-    passwordsMatch = newPassword === repeatPassword && newPassword !== "";
-    return passwordsMatch;
-  };
 </script>
 
 <svelte:head>
@@ -91,7 +71,7 @@
     </div>
 
     <div class="flex justify-center space-x-1">
-      <Button on:click={updatePassword} class="p-3">
+      <Button on:click={() => (updatePasswordModal = true)} class="p-3">
         <RefreshOutline />Update Password
       </Button>
       <Button
@@ -110,67 +90,4 @@
   {/if}
 </div>
 
-<Modal
-  bind:open={updatePasswordModal}
-  size="xs"
-  autoclose={false}
-  class="w-full"
->
-  <form class="flex flex-col space-y-6" action="#">
-    <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">
-      Update password
-    </h3>
-    <Label class="space-y-2">
-      <span>Your current password</span>
-      <div>
-        <Input
-          type="password"
-          name="oldPassword"
-          placeholder="•••••"
-          required
-          bind:value={oldPassword}
-        />
-      </div>
-    </Label>
-    <Label class="space-y-2">
-      <span>New password</span>
-      <div>
-        <Input
-          type="password"
-          name="newPassword"
-          placeholder="•••••"
-          required
-          bind:value={newPassword}
-          on:blur={validatePassword}
-        />
-        {#if newPassword && !passwordValid}
-          <p class="mt-2 text-sm text-red-600">
-            Password must be at least 8 characters and contain numbers
-          </p>
-        {/if}
-      </div>
-    </Label>
-    <Label class="space-y-2">
-      <span>Repeat new password</span>
-      <div>
-        <Input
-          type="password"
-          name="repeatPassword"
-          placeholder="•••••"
-          required
-          bind:value={repeatPassword}
-          on:blur={validateRepeatPassword}
-        />
-        {#if repeatPassword && !passwordsMatch}
-          <p class="mt-2 text-sm text-red-600">Passwords do not match</p>
-        {/if}
-      </div>
-    </Label>
-    <Button
-      type="submit"
-      class="w-full1"
-      disabled={!passwordValid || !passwordsMatch || oldPassword.length < 8}
-      >Submit</Button
-    >
-  </form>
-</Modal>
+<UpdatePasswordModal bind:open={updatePasswordModal} />

@@ -1,4 +1,5 @@
 import { user } from "../../stores/userStore";
+import { apiFetch } from "./api";
 import { API_BASE_URL } from "./apiUrl";
 
 export function getAccessToken() {
@@ -19,9 +20,18 @@ export async function refreshAccessToken() {
     throw new Error("Failed to refresh access token");
   }
 
-  const data = await response.json();
-  setAccessToken(data.accessToken);
-  return data.accessToken;
+  try {
+    const data = await response.json();
+    if (data?.data) {
+      setAccessToken(data.data);
+      return data.data;
+    } else {
+      throw new Error("Access token not found in refresh response");
+    }
+  } catch (error) {
+    console.error("Error parsing refresh token response:", error);
+    throw new Error("Failed to parse refresh token response");
+  }
 }
 
 export async function login(email: string, password: string) {
@@ -41,6 +51,7 @@ export async function login(email: string, password: string) {
   const { accessToken, user: userData } = json.data;
   setAccessToken(accessToken);
   user.set(userData);
+  localStorage.setItem("user", JSON.stringify(userData));
 }
 
 export async function register(email: string, password: string) {
@@ -60,9 +71,25 @@ export async function register(email: string, password: string) {
   const { accessToken, user: userData } = json.data;
   setAccessToken(accessToken);
   user.set(userData);
+  localStorage.setItem("user", JSON.stringify(userData));
 }
 
 export function logout() {
+  localStorage.removeItem("user");
   localStorage.removeItem("accessToken");
   user.set(null);
+}
+
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string
+) {
+  return await apiFetch("/auth/changePassword", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
 }
