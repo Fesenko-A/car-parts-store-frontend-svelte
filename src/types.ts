@@ -77,9 +77,9 @@ export type User = {
 };
 
 export type OrderFilters = {
-  userId?: string;
-  searchString?: string;
-  status?: string;
+  userId: string;
+  searchString: string;
+  status: string;
   pageNumber: number;
   pageSize: number;
 };

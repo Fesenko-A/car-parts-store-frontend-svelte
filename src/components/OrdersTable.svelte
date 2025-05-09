@@ -30,7 +30,11 @@
       <TableBodyRow on:click={() => navigateToDetails(order.orderId)}>
         <TableBodyCell>{order.orderId}</TableBodyCell>
         <TableBodyCell>{formatDate(order.orderDate)}</TableBodyCell>
-        <TableBodyCell>{formatDate(order.lastUpdate)}</TableBodyCell>
+        <TableBodyCell
+          >{order.lastUpdate != null
+            ? formatDate(order.lastUpdate)
+            : "Never"}</TableBodyCell
+        >
         <TableBodyCell>{order.status}</TableBodyCell>
         <TableBodyCell>{formatCurrency(order.orderTotal)}</TableBodyCell>
       </TableBodyRow>
