@@ -57,8 +57,8 @@
     if (!checkIfLoggedIn()) return;
     isChecking = false;
 
+    orderFilters.set({ ...get(orderFilters), userId: get(user)!.id });
     loadOrders();
-    isChecking = false;
 
     unsubscribe = orderFilters.subscribe(() => {
       loadOrders();
