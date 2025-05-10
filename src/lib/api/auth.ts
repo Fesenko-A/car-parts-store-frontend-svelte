@@ -1,3 +1,4 @@
+import { resetOrderFilters } from "../../stores/orderFilters";
 import { user } from "../../stores/userStore";
 import { apiFetch } from "./api";
 import { API_BASE_URL } from "./apiUrl";
@@ -83,6 +84,7 @@ export async function register(
 export function logout() {
   localStorage.removeItem("user");
   localStorage.removeItem("accessToken");
+  resetOrderFilters();
   user.set(null);
 }
 
