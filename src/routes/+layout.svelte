@@ -7,7 +7,7 @@
   let { children } = $props();
 </script>
 
-<Toaster position="top-right" />
+<Toaster position="top-center" />
 
 <div class="min-h-screen flex flex-col">
   <Header />

@@ -16,29 +16,30 @@
   } from "flowbite-svelte-icons";
   import OrdersTable from "../../../components/OrdersTable.svelte";
   import { ORDER_STATUS } from "../../../constants";
-  import { isAdmin, user } from "../../../stores/userStore";
-  import { goto } from "$app/navigation";
-  import toast from "svelte-french-toast";
   import {
     orderFilters,
     resetOrderFilters,
   } from "../../../stores/orderFilters";
-  import { apiFetch, toQueryString } from "$lib";
+  import { apiFetch, checkIfAdmin, checkIfLoggedIn, toQueryString } from "$lib";
   import PaginationControl from "../../../components/PaginationControl.svelte";
 
   const orderStatuses = Object.values(ORDER_STATUS);
   let ordersData: any = null;
   let dropdownOpen = false;
+  let isChecking = true;
+  let loading = false;
 
   let errorMessage = "";
-
   let userId = "";
   let searchString = "";
 
   let unsubscribe: () => void;
 
   onMount(() => {
-    loadInitialData();
+    if (!checkIfLoggedIn() || !checkIfAdmin()) return;
+    isChecking = false;
+
+    loadOrders();
 
     unsubscribe = orderFilters.subscribe(() => {
       loadOrders();
@@ -72,32 +73,6 @@
     resetOrderFilters();
     userId = "";
     searchString = "";
-  };
-
-  let isChecking = true;
-  let loading = false;
-
-  onMount(() => {});
-
-  const loadInitialData = () => {
-    const currentUser = get(user);
-
-    if (!currentUser) {
-      goto("/login");
-      toast.error("Please log in first");
-      isChecking = false;
-      return;
-    }
-
-    if (!$isAdmin) {
-      goto("/");
-      toast.error("Access denied");
-      isChecking = false;
-      return;
-    }
-
-    loadOrders();
-    isChecking = false;
   };
 
   const loadOrders = async () => {

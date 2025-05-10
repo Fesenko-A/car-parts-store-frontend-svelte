@@ -9,11 +9,9 @@
     resetOrderFilters,
   } from "../../../stores/orderFilters";
   import { user } from "../../../stores/userStore";
-  import { apiFetch, toQueryString } from "$lib";
+  import { apiFetch, checkIfLoggedIn, toQueryString } from "$lib";
   import OrdersTable from "../../../components/OrdersTable.svelte";
   import PaginationControl from "../../../components/PaginationControl.svelte";
-  import { goto } from "$app/navigation";
-  import toast from "svelte-french-toast";
 
   const orderStatuses = Object.values(ORDER_STATUS);
   let ordersData: any = null;
@@ -56,7 +54,11 @@
   };
 
   onMount(() => {
-    loadInitialData();
+    if (!checkIfLoggedIn()) return;
+    isChecking = false;
+
+    loadOrders();
+    isChecking = false;
 
     unsubscribe = orderFilters.subscribe(() => {
       loadOrders();
@@ -66,21 +68,6 @@
       unsubscribe?.();
     };
   });
-
-  const loadInitialData = () => {
-    const currentUser = get(user);
-
-    if (!currentUser) {
-      goto("/login");
-      toast.error("Please log in first");
-      isChecking = false;
-      return;
-    }
-
-    orderFilters.set({ ...get(orderFilters), userId: currentUser.id });
-    loadOrders();
-    isChecking = false;
-  };
 
   const paginationHelper = {
     start: 0,
@@ -93,38 +80,36 @@
   <title>My orders</title>
 </svelte:head>
 
-{#if !isChecking}
-  {#if !loading}
-    <div class="flex justify-end mt-1 me-1">
-      <Button class="me-1 px-3" on:click={resetFilters}>
-        <RefreshOutline class="me-1.5" /> Reset filters
-      </Button>
-      <Button class="px-3">
-        {#if $orderFilters.status == ""}
-          Order status
-        {:else}
-          {$orderFilters.status}
-        {/if}
-        <ChevronDownOutline class="ms-1.5" />
-      </Button>
-      <Dropdown bind:open={dropdownOpen}>
-        {#each orderStatuses as status}
-          <DropdownItem on:click={() => selectStatus(status)}>
-            {status}
-          </DropdownItem>
-        {/each}
-      </Dropdown>
-    </div>
+{#if !isChecking && !loading}
+  <div class="flex justify-end mt-1 me-1">
+    <Button class="me-1 px-3" on:click={resetFilters}>
+      <RefreshOutline class="me-1.5" /> Reset filters
+    </Button>
+    <Button class="px-3">
+      {#if $orderFilters.status == ""}
+        Order status
+      {:else}
+        {$orderFilters.status}
+      {/if}
+      <ChevronDownOutline class="ms-1.5" />
+    </Button>
+    <Dropdown bind:open={dropdownOpen}>
+      {#each orderStatuses as status}
+        <DropdownItem on:click={() => selectStatus(status)}>
+          {status}
+        </DropdownItem>
+      {/each}
+    </Dropdown>
+  </div>
 
-    {#if ordersData.result.length > 0}
-      <OrdersTable orders={ordersData.result} />
-      <PaginationControl {paginationHelper} filters={orderFilters} />
-    {:else}
-      <p class="text-center text-lg mt-4">Nothing to display</p>
-    {/if}
+  {#if ordersData.result.length > 0}
+    <OrdersTable orders={ordersData.result} />
+    <PaginationControl {paginationHelper} filters={orderFilters} />
   {:else}
-    <div class="flex">
-      <Spinner size={12} class="mx-auto mt-20" />
-    </div>
+    <p class="text-center text-lg mt-4">Nothing to display</p>
   {/if}
+{:else}
+  <div class="flex">
+    <Spinner size={12} class="mx-auto mt-20" />
+  </div>
 {/if}
