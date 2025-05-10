@@ -32,29 +32,39 @@
     ORDER_STATUS.CANCELLED,
   ];
 
-  const handleOrderStatusChange = (newStatus: string) => {
-    statusDropdownOpen = true;
+  const handleOrderStatusChange = async (newStatus: string) => {
     if (newStatus === currentStatus) return;
-    order.status = newStatus;
-    currentStatus = newStatus;
-    statusDropdownOpen = false;
-  };
-
-  const statusIsDisabled = (status: string) => {
-    return orderStatuses.indexOf(status) < orderStatuses.indexOf(currentStatus);
-  };
-
-  const handlePaidInCash = async () => {
-    order.paid = true;
 
     try {
       const updatedOrder = await apiFetch(`/orders/update/${order.orderId}`, {
         method: "PUT",
         body: JSON.stringify({
-          pickupName: order.pickupName,
-          pickupPhoneNumber: order.pickupPhoneNumber,
-          pickupEmail: order.pickupEmail,
-          status: order.status,
+          status: newStatus,
+        }),
+      });
+
+      order = updatedOrder;
+      currentStatus = updatedOrder.status;
+      toast.success("Order status updated successfully");
+    } catch (err) {
+      errorMessage = (err as Error).message;
+      toast.error(errorMessage);
+    } finally {
+      statusDropdownOpen = false;
+    }
+  };
+
+  const statusIsDisabled = (status: string) => {
+    return (
+      orderStatuses.indexOf(status) <= orderStatuses.indexOf(currentStatus)
+    );
+  };
+
+  const handlePaidInCash = async () => {
+    try {
+      const updatedOrder = await apiFetch(`/orders/update/${order.orderId}`, {
+        method: "PUT",
+        body: JSON.stringify({
           paid: true,
         }),
       });
@@ -121,23 +131,25 @@
               <span class="font-medium text-green-600">(Paid)</span>
             {:else}
               <span class="font-medium text-red-600">(Unpaid)</span>
-              <Button
-                class="ms-2 shadow"
-                size="sm"
-                color="alternative"
-                on:click={handleOnlinePayment}
-              >
-                Pay Online
-              </Button>
-              {#if $isAdmin}
+              {#if order.status != ORDER_STATUS.CANCELLED}
                 <Button
                   class="ms-2 shadow"
                   size="sm"
                   color="alternative"
-                  on:click={handlePaidInCash}
+                  on:click={handleOnlinePayment}
                 >
-                  Mark as paid in cash
+                  Pay Online
                 </Button>
+                {#if $isAdmin}
+                  <Button
+                    class="ms-2 shadow"
+                    size="sm"
+                    color="alternative"
+                    on:click={handlePaidInCash}
+                  >
+                    Mark as paid in cash
+                  </Button>
+                {/if}
               {/if}
             {/if}
           {:else}
