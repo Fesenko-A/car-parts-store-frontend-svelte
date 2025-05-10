@@ -39,6 +39,7 @@
     if (!checkIfLoggedIn() || !checkIfAdmin()) return;
     isChecking = false;
 
+    resetOrderFilters();
     loadOrders();
 
     unsubscribe = orderFilters.subscribe(() => {

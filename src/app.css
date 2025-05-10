@@ -28,3 +28,11 @@
 .header-button {
   @apply text-gray-300 hover:text-gray-100 transition-colors focus:ring-0 focus:ring-gray-200;
 }
+
+.order-details-tile {
+  @apply bg-gray-100 p-4 rounded-lg flex flex-col;
+}
+
+.order-details-tile-text {
+  @apply font-medium mt-auto mb-auto;
+}

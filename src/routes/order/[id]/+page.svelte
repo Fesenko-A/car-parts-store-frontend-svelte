@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-  <title>{order ? `Order #${order.id}` : "Loading order..."}</title>
+  <title>{order ? `Order #${order.orderId}` : "Loading order..."}</title>
 </svelte:head>
 
 {#if loading}
