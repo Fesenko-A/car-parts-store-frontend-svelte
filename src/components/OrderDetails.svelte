@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formatCurrency, formatDate } from "$lib";
+  import { apiFetch, formatCurrency, formatDate } from "$lib";
   import {
     Table,
     TableHead,
@@ -15,8 +15,11 @@
   import { ORDER_STATUS, PAYMENT_METHODS } from "../constants";
   import { ChevronDownOutline } from "flowbite-svelte-icons";
   import { isAdmin } from "../stores/userStore";
+  import toast from "svelte-french-toast";
 
   export let order: Order;
+
+  let errorMessage = "";
 
   let statusDropdownOpen = false;
   let currentStatus = order.status;
@@ -29,26 +32,42 @@
     ORDER_STATUS.CANCELLED,
   ];
 
-  function handleOrderStatusChange(newStatus: string) {
+  const handleOrderStatusChange = (newStatus: string) => {
     statusDropdownOpen = true;
     if (newStatus === currentStatus) return;
     order.status = newStatus;
     currentStatus = newStatus;
     statusDropdownOpen = false;
-  }
+  };
 
-  function statusIsDisabled(status: string) {
+  const statusIsDisabled = (status: string) => {
     return orderStatuses.indexOf(status) < orderStatuses.indexOf(currentStatus);
-  }
+  };
 
-  function handlePaymensStatusChange() {
+  const handlePaidInCash = async () => {
     order.paid = true;
-  }
 
-  function handleOnlinePayment() {
-    order.paid = true;
-    order.paymentMethod = PAYMENT_METHODS.ONLINE;
-  }
+    try {
+      const updatedOrder = await apiFetch(`/orders/update/${order.orderId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          pickupName: order.pickupName,
+          pickupPhoneNumber: order.pickupPhoneNumber,
+          pickupEmail: order.pickupEmail,
+          status: order.status,
+          paid: true,
+        }),
+      });
+
+      order = updatedOrder;
+      toast.success("Order payment updated successfully");
+    } catch (err) {
+      errorMessage = (err as Error).message;
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleOnlinePayment = () => {};
 </script>
 
 {#if order}
@@ -95,10 +114,9 @@
       </div>
       <div class="order-details-tile">
         <p class="text-sm text-gray-600">Payment Method</p>
-        <div class="flex items-center">
+        <div class="order-details-tile-text">
           {#if order.paymentMethod === PAYMENT_METHODS.CASH}
-            <span class="font-medium text-gray-800">{order.paymentMethod}</span
-            >&nbsp;
+            <span class="font-medium text-gray-800">{order.paymentMethod}</span>
             {#if order.paid}
               <span class="font-medium text-green-600">(Paid)</span>
             {:else}
@@ -116,7 +134,7 @@
                   class="ms-2 shadow"
                   size="sm"
                   color="alternative"
-                  on:click={handlePaymensStatusChange}
+                  on:click={handlePaidInCash}
                 >
                   Mark as paid in cash
                 </Button>
