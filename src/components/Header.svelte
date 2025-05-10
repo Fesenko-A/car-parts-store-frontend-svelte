@@ -39,6 +39,7 @@
   const handleKey = (e: KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
+      goto("/");
     }
   };
 
