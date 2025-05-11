@@ -9,6 +9,22 @@ export function formatDate(date: Date) {
   return new Date(date).toLocaleDateString("en-GB");
 }
 
+export function formatDateTime(date: Date) {
+  const formattedDate = new Date(date).toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "UTC",
+  });
+
+  const cleanedDate = formattedDate.replace(/\s?(AM|PM)$/i, "").trim();
+
+  return `${cleanedDate} UTC`;
+}
+
 export function toQueryString(params: Record<string, any>): string {
   const query = new URLSearchParams();
 

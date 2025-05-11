@@ -1,27 +1,25 @@
 <script lang="ts">
-  import { apiFetch, formatCurrency, formatDate } from "$lib";
-  import {
-    Table,
-    TableHead,
-    TableHeadCell,
-    TableBody,
-    TableBodyRow,
-    TableBodyCell,
-    Button,
-    Dropdown,
-    DropdownItem,
-  } from "flowbite-svelte";
+  import { apiFetch, formatDateTime } from "$lib";
+  import { Button, Dropdown, DropdownItem } from "flowbite-svelte";
   import type { Order } from "../types";
   import { ORDER_STATUS, PAYMENT_METHODS } from "../constants";
   import { ChevronDownOutline } from "flowbite-svelte-icons";
   import { isAdmin } from "../stores/userStore";
   import toast from "svelte-french-toast";
+  import { goto } from "$app/navigation";
+  import OrderItemsTable from "./OrderItemsTable.svelte";
 
   export let order: Order;
 
   let errorMessage = "";
 
   let statusDropdownOpen = false;
+  let statusUpdateLoading = false;
+
+  let statusButtonDisabled =
+    order.status === ORDER_STATUS.CANCELLED ||
+    order.status === ORDER_STATUS.COMPLETED;
+
   let currentStatus = order.status;
   const orderStatuses = [
     ORDER_STATUS.PENDING,
@@ -34,6 +32,8 @@
 
   const handleOrderStatusChange = async (newStatus: string) => {
     if (newStatus === currentStatus) return;
+    statusDropdownOpen = false;
+    statusUpdateLoading = true;
 
     try {
       const updatedOrder = await apiFetch(`/orders/update/${order.orderId}`, {
@@ -46,11 +46,26 @@
       order = updatedOrder;
       currentStatus = updatedOrder.status;
       toast.success("Order status updated successfully");
+      notifyAboutRefund();
     } catch (err) {
       errorMessage = (err as Error).message;
       toast.error(errorMessage);
     } finally {
-      statusDropdownOpen = false;
+      statusUpdateLoading = false;
+    }
+  };
+
+  const notifyAboutRefund = () => {
+    if (
+      currentStatus == ORDER_STATUS.CANCELLED &&
+      order.paymentMethod == PAYMENT_METHODS.ONLINE
+    ) {
+      toast.success(
+        "Online payment has been refunded and will be returned in 10 business days.",
+        {
+          duration: 6000,
+        }
+      );
     }
   };
 
@@ -77,7 +92,13 @@
     }
   };
 
-  const handleOnlinePayment = () => {};
+  const handleOnlinePayment = () => {
+    goto("/payment", {
+      state: {
+        orderId: order.orderId,
+      },
+    });
+  };
 </script>
 
 {#if order}
@@ -91,8 +112,17 @@
         <p class="text-sm text-gray-600">Status</p>
         <p class="order-details-tile-text">
           {#if $isAdmin}
-            <Button class="shadow" size="sm" color="alternative">
-              {order.status}<ChevronDownOutline />
+            <Button
+              class="shadow"
+              size="sm"
+              color="alternative"
+              disabled={statusUpdateLoading || statusButtonDisabled}
+            >
+              {#if statusUpdateLoading}
+                Loading...
+              {:else}
+                {order.status}<ChevronDownOutline />
+              {/if}
             </Button>
             <Dropdown bind:open={statusDropdownOpen}>
               {#each orderStatuses as status}
@@ -113,47 +143,49 @@
 
           {#if order.lastUpdate}
             <span class="text-sm text-gray-500">
-              (Last Updated: {formatDate(order.lastUpdate)})</span
+              (Last Updated: {formatDateTime(order.lastUpdate)})</span
             >
           {/if}
         </p>
       </div>
       <div class="order-details-tile">
         <p class="text-sm text-gray-600">Order Date</p>
-        <p class="order-details-tile-text">{formatDate(order.orderDate)}</p>
+        <p class="order-details-tile-text">{formatDateTime(order.orderDate)}</p>
       </div>
       <div class="order-details-tile">
         <p class="text-sm text-gray-600">Payment Method</p>
         <div class="order-details-tile-text">
-          {#if order.paymentMethod === PAYMENT_METHODS.CASH}
-            <span class="font-medium text-gray-800">{order.paymentMethod}</span>
-            {#if order.paid}
-              <span class="font-medium text-green-600">(Paid)</span>
-            {:else}
-              <span class="font-medium text-red-600">(Unpaid)</span>
-              {#if order.status != ORDER_STATUS.CANCELLED}
+          <span class="font-medium text-gray-800">{order.paymentMethod}</span>
+          {#if order.paid}
+            <span class="font-medium text-green-600">(Paid)</span>
+          {:else}
+            <span class="font-medium text-red-600">
+              {#if order.paymentMethod === PAYMENT_METHODS.ONLINE && order.status === ORDER_STATUS.CANCELLED}
+                (Refunded)
+              {:else}
+                (Unpaid)
+              {/if}
+            </span>
+            {#if order.status != ORDER_STATUS.CANCELLED}
+              <Button
+                class="ms-2 shadow"
+                size="sm"
+                color="alternative"
+                on:click={handleOnlinePayment}
+              >
+                Pay Online
+              </Button>
+              {#if $isAdmin}
                 <Button
                   class="ms-2 shadow"
                   size="sm"
                   color="alternative"
-                  on:click={handleOnlinePayment}
+                  on:click={handlePaidInCash}
                 >
-                  Pay Online
+                  Mark as paid in cash
                 </Button>
-                {#if $isAdmin}
-                  <Button
-                    class="ms-2 shadow"
-                    size="sm"
-                    color="alternative"
-                    on:click={handlePaidInCash}
-                  >
-                    Mark as paid in cash
-                  </Button>
-                {/if}
               {/if}
             {/if}
-          {:else}
-            <p class="order-details-tile-text">{order.paymentMethod}</p>
           {/if}
         </div>
       </div>
@@ -174,33 +206,7 @@
   </section>
 
   <h2 class="text-2xl font-bold ps-6">Order Items</h2>
-  <Table striped={true} hoverable={true} class="mb-5">
-    <TableHead>
-      <TableHeadCell>Product</TableHeadCell>
-      <TableHeadCell>Price per Unit</TableHeadCell>
-      <TableHeadCell>Quantity</TableHeadCell>
-      <TableHeadCell>Total</TableHeadCell>
-    </TableHead>
-    <TableBody tableBodyClass="divide-y">
-      {#each order.orderDetails as detail}
-        <TableBodyRow>
-          <TableBodyCell>{detail.productNameAtOrder}</TableBodyCell>
-          <TableBodyCell
-            >{formatCurrency(detail.productPriceAtOrder)}</TableBodyCell
-          >
-          <TableBodyCell>{detail.quantity}</TableBodyCell>
-          <TableBodyCell>{formatCurrency(detail.price)}</TableBodyCell>
-        </TableBodyRow>
-      {/each}</TableBody
-    >
-    <tfoot>
-      <tr class="font-semibold text-gray-900">
-        <th scope="row" class="py-3 px-6 text-base" colspan="2">Total</th>
-        <td class="py-3 px-6 font-bold">{order.totalItems}</td>
-        <td class="py-3 px-6 font-bold">{formatCurrency(order.orderTotal)}</td>
-      </tr>
-    </tfoot>
-  </Table>
+  <OrderItemsTable {order} />
 {:else}
   <p>Order not found.</p>
 {/if}

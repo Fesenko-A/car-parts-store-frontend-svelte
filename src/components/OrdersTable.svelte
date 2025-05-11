@@ -7,7 +7,7 @@
     TableHead,
     TableHeadCell,
   } from "flowbite-svelte";
-  import { formatCurrency, formatDate } from "$lib";
+  import { formatCurrency, formatDate, formatDateTime } from "$lib";
   import { goto } from "$app/navigation";
 
   export let orders: any[] = [];
@@ -32,7 +32,7 @@
         <TableBodyCell>{formatDate(order.orderDate)}</TableBodyCell>
         <TableBodyCell
           >{order.lastUpdate != null
-            ? formatDate(order.lastUpdate)
+            ? formatDateTime(order.lastUpdate)
             : "Never"}</TableBodyCell
         >
         <TableBodyCell>{order.status}</TableBodyCell>
