@@ -2,9 +2,45 @@
   import { Badge, Button, Card, Tooltip } from "flowbite-svelte";
   import type { Product } from "../types";
   import { CartPlusAltSolid } from "flowbite-svelte-icons";
-  import { formatCurrency } from "$lib";
+  import {
+    apiFetch,
+    checkIfLoggedIn,
+    formatCurrency,
+    toQueryString,
+  } from "$lib";
+  import { user } from "../stores/userStore";
+  import { get } from "svelte/store";
+  import toast from "svelte-french-toast";
+  import { shoppingCart } from "../stores/shoppingCartStore";
 
   export let product: Product;
+
+  let loading = false;
+  let errorMessage = "";
+
+  const handleAddToCart = async () => {
+    checkIfLoggedIn();
+
+    const userId = get(user)!.id;
+    const productId = product.id;
+    const updateQuantityBy = 1;
+
+    const query = toQueryString({ userId, productId, updateQuantityBy });
+
+    try {
+      loading = true;
+      const result = await apiFetch(`/shoppingCart/upsert?${query}`, {
+        method: "POST",
+      });
+      toast.success("Product has been added to your shopping cart!");
+      shoppingCart.set(result);
+    } catch (err) {
+      errorMessage = (err as Error).message;
+      toast.error(errorMessage);
+    } finally {
+      loading = false;
+    }
+  };
 </script>
 
 <Card
@@ -47,7 +83,12 @@
           </span>
         {/if}
       </div>
-      <Button size="sm" disabled={!product.inStock} class="flex-shrink-0">
+      <Button
+        size="sm"
+        disabled={!product.inStock || loading}
+        class="flex-shrink-0"
+        on:click={handleAddToCart}
+      >
         <CartPlusAltSolid class="w-5 h-5" />
       </Button>
       <Tooltip>{product.inStock ? "Add to cart" : "Out of stock"}</Tooltip>

@@ -59,6 +59,13 @@ export type OrderDetails = {
   price: number;
 };
 
+export type ShoppingCart = {
+  id: number;
+  userId: string;
+  cartItems: CartItem[];
+  cartTotal: number;
+};
+
 export type CartItem = {
   id: number;
   productId: number;
@@ -74,6 +81,7 @@ export type User = {
   email: string;
   phoneNumber: string;
   role: string;
+  shoppingCartId: number;
 };
 
 export type OrderFilters = {

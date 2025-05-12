@@ -1,17 +1,66 @@
+import { get } from "svelte/store";
 import { resetOrderFilters } from "../../stores/orderFilters";
 import { user } from "../../stores/userStore";
 import { apiFetch } from "./api";
 import { API_BASE_URL } from "./apiUrl";
+import { shoppingCart } from "../../stores/shoppingCartStore";
 
-export function getAccessToken() {
+export const login = async (email: string, password: string) => {
+  const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+    credentials: "include",
+  });
+
+  const json = await res.json();
+
+  if (!res.ok || !json.isSuccess) {
+    throw new Error(json.errorMessage || "Login failed");
+  }
+
+  const { accessToken, user: userData } = json.data;
+  setAccessToken(accessToken);
+  user.set(userData);
+  localStorage.setItem("user", JSON.stringify(userData));
+  await loadShoppingCart();
+};
+
+export const register = async (
+  email: string,
+  firstName: string,
+  lastName: string,
+  phoneNumber: string,
+  password: string
+) => {
+  const res = await fetch(`${API_BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, firstName, lastName, phoneNumber, password }),
+    credentials: "include",
+  });
+
+  const json = await res.json();
+
+  if (!res.ok || !json.isSuccess) {
+    throw new Error(json.errorMessage || "Registration failed");
+  }
+
+  const { accessToken, user: userData } = json.data;
+  setAccessToken(accessToken);
+  user.set(userData);
+  localStorage.setItem("user", JSON.stringify(userData));
+};
+
+export const getAccessToken = () => {
   return localStorage.getItem("accessToken");
-}
+};
 
-export function setAccessToken(token: string) {
+export const setAccessToken = (token: string) => {
   localStorage.setItem("accessToken", token);
-}
+};
 
-export async function refreshAccessToken() {
+export const refreshAccessToken = async () => {
   const response = await fetch(`${API_BASE_URL}/auth/refreshToken`, {
     method: "POST",
     credentials: "include",
@@ -33,65 +82,19 @@ export async function refreshAccessToken() {
     console.error("Error parsing refresh token response:", error);
     throw new Error("Failed to parse refresh token response");
   }
-}
+};
 
-export async function login(email: string, password: string) {
-  const res = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-    credentials: "include",
-  });
-
-  const json = await res.json();
-
-  if (!res.ok || !json.isSuccess) {
-    throw new Error(json.errorMessage || "Login failed");
-  }
-
-  const { accessToken, user: userData } = json.data;
-  setAccessToken(accessToken);
-  user.set(userData);
-  localStorage.setItem("user", JSON.stringify(userData));
-}
-
-export async function register(
-  email: string,
-  firstName: string,
-  lastName: string,
-  phoneNumber: string,
-  password: string
-) {
-  const res = await fetch(`${API_BASE_URL}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, firstName, lastName, phoneNumber, password }),
-    credentials: "include",
-  });
-
-  const json = await res.json();
-
-  if (!res.ok || !json.isSuccess) {
-    throw new Error(json.errorMessage || "Registration failed");
-  }
-
-  const { accessToken, user: userData } = json.data;
-  setAccessToken(accessToken);
-  user.set(userData);
-  localStorage.setItem("user", JSON.stringify(userData));
-}
-
-export function logout() {
+export const logout = () => {
   localStorage.removeItem("user");
   localStorage.removeItem("accessToken");
   resetOrderFilters();
   user.set(null);
-}
+};
 
-export async function changePassword(
+export const changePassword = async (
   currentPassword: string,
   newPassword: string
-) {
+) => {
   return await apiFetch("/auth/changePassword", {
     method: "PATCH",
     headers: {
@@ -100,4 +103,11 @@ export async function changePassword(
     credentials: "include",
     body: JSON.stringify({ currentPassword, newPassword }),
   });
-}
+};
+
+const loadShoppingCart = async () => {
+  const userId = get(user)!.id;
+  const result = await apiFetch(`/shoppingCart/get?userId=${userId}`);
+  shoppingCart.set(result);
+  localStorage.setItem("shoppingCart", JSON.stringify(result));
+};

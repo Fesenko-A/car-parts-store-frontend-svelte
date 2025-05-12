@@ -1,5 +1,5 @@
-import { derived, writable } from "svelte/store";
-import type { User } from "../types";
+import { writable } from "svelte/store";
+import type { ShoppingCart } from "../types";
 
 const persist = <T>(key: string, initialValue: T) => {
   const storedValue =
@@ -17,5 +17,4 @@ const persist = <T>(key: string, initialValue: T) => {
   return store;
 };
 
-export const user = persist<User | null>("user", null);
-export const isAdmin = derived(user, ($user) => $user?.role === "Admin");
+export const shoppingCart = persist<ShoppingCart | null>("shoppingCart", null);

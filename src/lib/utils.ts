@@ -1,15 +1,15 @@
-export function formatCurrency(amount: number) {
+export const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
   }).format(amount);
-}
+};
 
-export function formatDate(date: Date) {
+export const formatDate = (date: Date) => {
   return new Date(date).toLocaleDateString("en-GB");
-}
+};
 
-export function formatDateTime(date: Date) {
+export const formatDateTime = (date: Date) => {
   const formattedDate = new Date(date).toLocaleString("en-GB", {
     day: "2-digit",
     month: "2-digit",
@@ -23,9 +23,9 @@ export function formatDateTime(date: Date) {
   const cleanedDate = formattedDate.replace(/\s?(AM|PM)$/i, "").trim();
 
   return `${cleanedDate} UTC`;
-}
+};
 
-export function toQueryString(params: Record<string, any>): string {
+export const toQueryString = (params: Record<string, any>): string => {
   const query = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
@@ -37,4 +37,4 @@ export function toQueryString(params: Record<string, any>): string {
   });
 
   return query.toString();
-}
+};
