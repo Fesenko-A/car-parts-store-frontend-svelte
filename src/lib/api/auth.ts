@@ -1,9 +1,7 @@
-import { get } from "svelte/store";
 import { resetOrderFilters } from "../../stores/orderFilters";
 import { user } from "../../stores/userStore";
 import { apiFetch } from "./api";
 import { API_BASE_URL } from "./apiUrl";
-import { shoppingCart } from "../../stores/shoppingCartStore";
 
 export const login = async (email: string, password: string) => {
   const res = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -23,7 +21,6 @@ export const login = async (email: string, password: string) => {
   setAccessToken(accessToken);
   user.set(userData);
   localStorage.setItem("user", JSON.stringify(userData));
-  await loadShoppingCart();
 };
 
 export const register = async (
@@ -103,11 +100,4 @@ export const changePassword = async (
     credentials: "include",
     body: JSON.stringify({ currentPassword, newPassword }),
   });
-};
-
-const loadShoppingCart = async () => {
-  const userId = get(user)!.id;
-  const result = await apiFetch(`/shoppingCart/get?userId=${userId}`);
-  shoppingCart.set(result);
-  localStorage.setItem("shoppingCart", JSON.stringify(result));
 };

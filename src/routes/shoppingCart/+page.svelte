@@ -1,8 +1,34 @@
 <script lang="ts">
-  import { Button } from "flowbite-svelte";
-  import { formatCurrency } from "$lib";
+  import { Button, Spinner } from "flowbite-svelte";
+  import { apiFetch, checkIfLoggedIn, formatCurrency } from "$lib";
   import { CartOutline } from "flowbite-svelte-icons";
-  import { shoppingCart } from "../../stores/shoppingCartStore";
+  import { onMount } from "svelte";
+  import { get } from "svelte/store";
+  import { user } from "../../stores/userStore";
+  import toast from "svelte-french-toast";
+  import { goto } from "$app/navigation";
+  import { cartIsEmpty, shoppingCart } from "../../stores/shoppingCartStore";
+
+  let shoppingCartData: any = null;
+  let loading = false;
+  let errorMessage = "";
+
+  onMount(async () => {
+    checkIfLoggedIn();
+    const userId = get(user)!.id;
+
+    try {
+      loading = true;
+      shoppingCartData = await apiFetch(`/shoppingCart/get?userId=${userId}`);
+      shoppingCart.set(shoppingCartData);
+    } catch (err) {
+      errorMessage = (err as Error).message;
+      toast.error(errorMessage);
+      goto("/");
+    } finally {
+      loading = false;
+    }
+  });
 </script>
 
 <svelte:head>
@@ -10,8 +36,8 @@
 </svelte:head>
 
 <div class="max-w-6xl mx-auto p-4 sm:p-6 pb-28 relative">
-  {#if $shoppingCart}
-    {#if $shoppingCart.cartItems.length === 0}
+  {#if !loading && shoppingCartData}
+    {#if $cartIsEmpty}
       <div class="text-center py-16">
         <CartOutline class="h-18 w-18 text-gray-400 mx-auto" />
         <h3 class="mt-4 text-lg font-semibold">Your cart is empty</h3>
@@ -22,7 +48,7 @@
     {:else}
       <div class="space-y-10">
         <div class="space-y-8">
-          {#each $shoppingCart.cartItems as cartItem}
+          {#each shoppingCartData.cartItems as cartItem}
             <div
               class="flex flex-col sm:flex-row gap-6 p-4 rounded-2xl shadow hover:shadow-lg transition-shadow bg-white"
             >
@@ -114,7 +140,7 @@
           <div class="flex justify-between items-center mb-4">
             <span class="text-lg font-medium">Total</span>
             <span class="text-2xl font-bold"
-              >{formatCurrency($shoppingCart.cartTotal)}</span
+              >{formatCurrency(shoppingCartData.cartTotal)}</span
             >
           </div>
 
@@ -130,7 +156,7 @@
         <div class="flex justify-between items-center mb-3">
           <span class="text-lg font-medium">Total</span>
           <span class="text-xl font-bold"
-            >{formatCurrency($shoppingCart.cartTotal)}</span
+            >{formatCurrency(shoppingCartData.cartTotal)}</span
           >
         </div>
         <Button class="w-full py-3 text-lg" size="lg"
@@ -138,5 +164,9 @@
         >
       </div>
     {/if}
+  {:else}
+    <div class="flex">
+      <Spinner size={12} class="mx-auto mt-20" />
+    </div>
   {/if}
 </div>

@@ -29,11 +29,10 @@
 
     try {
       loading = true;
-      const result = await apiFetch(`/shoppingCart/upsert?${query}`, {
+      await apiFetch(`/shoppingCart/upsert?${query}`, {
         method: "POST",
       });
       toast.success("Product has been added to your shopping cart!");
-      shoppingCart.set(result);
     } catch (err) {
       errorMessage = (err as Error).message;
       toast.error(errorMessage);
