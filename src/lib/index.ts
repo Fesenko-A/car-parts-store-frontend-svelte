@@ -1,4 +1,4 @@
-export { getShoppingCart, addProductToCart } from "./api/shoppingCart";
+export { getShoppingCart, updateCartItem } from "./api/shoppingCart";
 export { checkIfAdmin, checkIfLoggedIn } from "./accessHelper";
 export { login, register, logout, changePassword } from "./api/auth";
 export { apiFetch } from "./api/api";

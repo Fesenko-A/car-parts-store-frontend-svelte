@@ -7,7 +7,6 @@ import { checkIfLoggedIn, toQueryString } from "$lib";
 
 export const getShoppingCart = async () => {
   checkIfLoggedIn();
-
   const userId = get(user)!.id;
   let shoppingCartData;
 
@@ -21,18 +20,19 @@ export const getShoppingCart = async () => {
   }
 };
 
-export const addProductToCart = async (productId: number) => {
+export const updateCartItem = async (
+  productId: number,
+  updateQuantityBy: number
+) => {
   checkIfLoggedIn();
-
   const userId = get(user)!.id;
-  const updateQuantityBy = 1;
   const query = toQueryString({ userId, productId, updateQuantityBy });
 
   try {
-    await apiFetch(`/shoppingCart/upsert?${query}`, {
+    const result = await apiFetch(`/shoppingCart/upsert?${query}`, {
       method: "POST",
     });
-    toast.success("Product has been added to your shopping cart!");
+    shoppingCart.set(result);
   } catch (err) {
     const errorMessage = (err as Error).message;
     toast.error(errorMessage);

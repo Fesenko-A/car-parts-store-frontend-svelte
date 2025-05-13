@@ -3,7 +3,8 @@
   import type { Product } from "../types";
   import { CartPlusAltSolid } from "flowbite-svelte-icons";
   import { formatCurrency } from "$lib";
-  import { addProductToCart } from "$lib/api/shoppingCart";
+  import { updateCartItem } from "$lib/api/shoppingCart";
+  import toast from "svelte-french-toast";
 
   export let product: Product;
 
@@ -12,9 +13,10 @@
   const handleAddToCart = async () => {
     try {
       loading = true;
-      await addProductToCart(product.id);
+      await updateCartItem(product!.id, 1);
+      toast.success("Product has been added to the shopping cart!");
     } catch {
-      // Handled in addProductToCart
+      // Handled in updateCartItem
     } finally {
       loading = false;
     }

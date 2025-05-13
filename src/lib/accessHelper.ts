@@ -1,26 +1,31 @@
 import { goto } from "$app/navigation";
 import { get } from "svelte/store";
-import { user, isAdmin } from "../stores/userStore";
 import toast from "svelte-french-toast";
+import { browser } from "$app/environment";
+import { user, isAdmin } from "../stores/userStore";
 
-export function checkIfLoggedIn() {
+export const checkIfLoggedIn = () => {
   const currentUser = get(user);
 
   if (!currentUser) {
-    goto("/login");
-    toast.error("Please log in first");
+    if (browser) {
+      goto("/login");
+      toast.error("Please log in first");
+    }
     return false;
   }
 
   return true;
-}
+};
 
-export function checkIfAdmin() {
+export const checkIfAdmin = () => {
   if (!get(isAdmin)) {
-    goto("/");
-    toast.error("Access denied");
+    if (browser) {
+      goto("/");
+      toast.error("Access denied");
+    }
     return false;
   }
 
   return true;
-}
+};

@@ -10,8 +10,9 @@
   } from "flowbite-svelte";
   import type { Product } from "../../../types";
   import { onMount } from "svelte";
-  import { addProductToCart, apiFetch, formatCurrency } from "$lib";
+  import { apiFetch, formatCurrency, updateCartItem } from "$lib";
   import { goto } from "$app/navigation";
+  import toast from "svelte-french-toast";
 
   let product: Product | null = null;
   let loading = false;
@@ -28,7 +29,8 @@
   const handleAddProduct = async () => {
     try {
       loading = true;
-      await addProductToCart(product!.id);
+      await updateCartItem(product!.id, 1);
+      toast.success("Product has been added to the shopping cart!");
     } catch {
       goto("/");
     } finally {
