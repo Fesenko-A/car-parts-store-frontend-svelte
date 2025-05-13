@@ -2,40 +2,19 @@
   import { Badge, Button, Card, Tooltip } from "flowbite-svelte";
   import type { Product } from "../types";
   import { CartPlusAltSolid } from "flowbite-svelte-icons";
-  import {
-    apiFetch,
-    checkIfLoggedIn,
-    formatCurrency,
-    toQueryString,
-  } from "$lib";
-  import { user } from "../stores/userStore";
-  import { get } from "svelte/store";
-  import toast from "svelte-french-toast";
-  import { shoppingCart } from "../stores/shoppingCartStore";
+  import { formatCurrency } from "$lib";
+  import { addProductToCart } from "$lib/api/shoppingCart";
 
   export let product: Product;
 
   let loading = false;
-  let errorMessage = "";
 
   const handleAddToCart = async () => {
-    checkIfLoggedIn();
-
-    const userId = get(user)!.id;
-    const productId = product.id;
-    const updateQuantityBy = 1;
-
-    const query = toQueryString({ userId, productId, updateQuantityBy });
-
     try {
       loading = true;
-      await apiFetch(`/shoppingCart/upsert?${query}`, {
-        method: "POST",
-      });
-      toast.success("Product has been added to your shopping cart!");
-    } catch (err) {
-      errorMessage = (err as Error).message;
-      toast.error(errorMessage);
+      await addProductToCart(product.id);
+    } catch {
+      // Handled in addProductToCart
     } finally {
       loading = false;
     }

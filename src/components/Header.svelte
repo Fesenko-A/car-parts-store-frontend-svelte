@@ -10,6 +10,7 @@
   import {
     ArrowLeftToBracketOutline,
     CartOutline,
+    CartSolid,
     InfoCircleOutline,
     RectangleListSolid,
     SearchOutline,
@@ -22,6 +23,7 @@
   import { get } from "svelte/store";
   import { goto } from "$app/navigation";
   import { user } from "../stores/userStore";
+  import { cartIsEmpty } from "../stores/shoppingCartStore";
 
   let searchQuery = "";
 
@@ -101,7 +103,11 @@
   <NavUl class="items-center space-x-3">
     {#if $user}
       <NavLi href="/shoppingCart" class="flex items-center">
-        <CartOutline size="lg" class="hidden md:block header-button" />
+        {#if $cartIsEmpty}
+          <CartOutline size="lg" class="hidden md:block header-button" />
+        {:else}
+          <CartSolid size="lg" class="hidden md:block header-button" />
+        {/if}
         <span class="block md:hidden ps-2">Cart</span>
       </NavLi>
       <NavLi href="/" class="flex items-center">

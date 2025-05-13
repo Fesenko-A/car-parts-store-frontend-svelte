@@ -1,29 +1,19 @@
 <script lang="ts">
   import { Button, Spinner } from "flowbite-svelte";
-  import { apiFetch, checkIfLoggedIn, formatCurrency } from "$lib";
+  import { formatCurrency, getShoppingCart } from "$lib";
   import { CartOutline } from "flowbite-svelte-icons";
   import { onMount } from "svelte";
-  import { get } from "svelte/store";
-  import { user } from "../../stores/userStore";
-  import toast from "svelte-french-toast";
+  import { cartIsEmpty } from "../../stores/shoppingCartStore";
   import { goto } from "$app/navigation";
-  import { cartIsEmpty, shoppingCart } from "../../stores/shoppingCartStore";
 
   let shoppingCartData: any = null;
   let loading = false;
-  let errorMessage = "";
 
   onMount(async () => {
-    checkIfLoggedIn();
-    const userId = get(user)!.id;
-
     try {
       loading = true;
-      shoppingCartData = await apiFetch(`/shoppingCart/get?userId=${userId}`);
-      shoppingCart.set(shoppingCartData);
-    } catch (err) {
-      errorMessage = (err as Error).message;
-      toast.error(errorMessage);
+      shoppingCartData = await getShoppingCart();
+    } catch {
       goto("/");
     } finally {
       loading = false;
