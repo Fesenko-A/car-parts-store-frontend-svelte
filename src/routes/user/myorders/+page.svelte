@@ -9,7 +9,7 @@
     resetOrderFilters,
   } from "../../../stores/orderFilters";
   import { user } from "../../../stores/userStore";
-  import { apiFetch, checkIfLoggedIn, toQueryString } from "$lib";
+  import { checkIfLoggedIn, getAllOrders } from "$lib";
   import OrdersTable from "../../../components/OrdersTable.svelte";
   import PaginationControl from "../../../components/PaginationControl.svelte";
 
@@ -19,16 +19,13 @@
   let loading = false;
   let isChecking = true;
 
-  let errorMessage = "";
-
   let unsubscribe: () => void;
 
   const loadOrders = async () => {
+    loading = true;
     try {
       const filters = get(orderFilters);
-      const query = toQueryString(filters);
-      loading = true;
-      ordersData = await apiFetch(`/orders/getAll?${query}`);
+      ordersData = await getAllOrders();
       paginationHelper.start = (filters.pageNumber - 1) * filters.pageSize;
       paginationHelper.end = Math.min(
         filters.pageNumber * filters.pageSize,
@@ -36,7 +33,7 @@
       );
       paginationHelper.total = ordersData.pagination.totalRecords;
     } catch (err) {
-      errorMessage = (err as Error).message;
+      // Handled in getAllOrders
     } finally {
       loading = false;
     }

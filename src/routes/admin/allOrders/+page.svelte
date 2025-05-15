@@ -20,7 +20,7 @@
     orderFilters,
     resetOrderFilters,
   } from "../../../stores/orderFilters";
-  import { apiFetch, checkIfAdmin, checkIfLoggedIn, toQueryString } from "$lib";
+  import { checkIfAdmin, checkIfLoggedIn, getAllOrders } from "$lib";
   import PaginationControl from "../../../components/PaginationControl.svelte";
 
   const orderStatuses = Object.values(ORDER_STATUS);
@@ -29,7 +29,6 @@
   let isChecking = true;
   let loading = false;
 
-  let errorMessage = "";
   let userId = "";
   let searchString = "";
 
@@ -77,11 +76,10 @@
   };
 
   const loadOrders = async () => {
+    loading = true;
     try {
       const filters = get(orderFilters);
-      const query = toQueryString(filters);
-      loading = true;
-      ordersData = await apiFetch(`/orders/getAll?${query}`);
+      ordersData = await getAllOrders();
       paginationHelper.start = (filters.pageNumber - 1) * filters.pageSize;
       paginationHelper.end = Math.min(
         filters.pageNumber * filters.pageSize,
@@ -89,7 +87,7 @@
       );
       paginationHelper.total = ordersData.pagination.totalRecords;
     } catch (err) {
-      errorMessage = (err as Error).message;
+      // Handled it getAllOrders
     } finally {
       loading = false;
     }

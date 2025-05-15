@@ -2,22 +2,24 @@
   import { page } from "$app/stores";
   import { onMount } from "svelte";
   import OrderDetails from "../../../components/OrderDetails.svelte";
-  import { apiFetch } from "$lib";
-  import toast from "svelte-french-toast";
+  import { getOrder } from "$lib";
   import { Spinner } from "flowbite-svelte";
   import { goto } from "$app/navigation";
 
   let order: any = null;
   let loading = true;
-  let errorMessage = "";
 
   onMount(async () => {
+    loading = true;
     try {
       const { id } = $page.params;
-      order = await apiFetch(`/orders/get/${id}`);
+      const numericId = Number(id);
+      if (isNaN(numericId)) {
+        throw new Error("Invalid order ID");
+      }
+
+      order = await getOrder(numericId);
     } catch (err) {
-      errorMessage = (err as Error).message;
-      toast.error(errorMessage);
       goto("/user/myorders");
     } finally {
       loading = false;

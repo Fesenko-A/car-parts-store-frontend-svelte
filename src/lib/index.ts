@@ -13,4 +13,10 @@ export {
   formatDateTime,
   toQueryString,
 } from "./utils";
-export { createOrder } from "./api/order";
+export {
+  createOrder,
+  getOrder,
+  getAllOrders,
+  updateOrderStatus,
+  updateOrderPaidInCash,
+} from "./api/order";

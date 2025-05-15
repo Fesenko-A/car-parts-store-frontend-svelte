@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { apiFetch, formatDateTime } from "$lib";
+  import {
+    formatDateTime,
+    updateOrderPaidInCash,
+    updateOrderStatus,
+  } from "$lib";
   import { Button, Dropdown, DropdownItem } from "flowbite-svelte";
   import type { Order } from "../types";
   import { ORDER_STATUS, PAYMENT_METHODS } from "../constants";
@@ -11,10 +15,9 @@
 
   export let order: Order;
 
-  let errorMessage = "";
-
   let statusDropdownOpen = false;
   let statusUpdateLoading = false;
+  let updatePaidLoading = false;
 
   let statusButtonDisabled =
     order.status === ORDER_STATUS.CANCELLED ||
@@ -31,25 +34,18 @@
   ];
 
   const handleOrderStatusChange = async (newStatus: string) => {
-    if (newStatus === currentStatus) return;
     statusDropdownOpen = false;
     statusUpdateLoading = true;
 
     try {
-      const updatedOrder = await apiFetch(`/orders/update/${order.orderId}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          status: newStatus,
-        }),
-      });
-
+      const updatedOrder = await updateOrderStatus(order.orderId, newStatus);
       order = updatedOrder;
       currentStatus = updatedOrder.status;
+
       toast.success("Order status updated successfully");
       notifyAboutRefund();
-    } catch (err) {
-      errorMessage = (err as Error).message;
-      toast.error(errorMessage);
+    } catch {
+      // Handled in updateOrderStatus
     } finally {
       statusUpdateLoading = false;
     }
@@ -69,26 +65,16 @@
     }
   };
 
-  const statusIsDisabled = (status: string) => {
-    return (
-      orderStatuses.indexOf(status) <= orderStatuses.indexOf(currentStatus)
-    );
-  };
-
   const handlePaidInCash = async () => {
+    updatePaidLoading = true;
     try {
-      const updatedOrder = await apiFetch(`/orders/update/${order.orderId}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          paid: true,
-        }),
-      });
-
+      const updatedOrder = await updateOrderPaidInCash(order.orderId);
       order = updatedOrder;
       toast.success("Order payment updated successfully");
-    } catch (err) {
-      errorMessage = (err as Error).message;
-      toast.error(errorMessage);
+    } catch {
+      // Handled in updateOrderPaidInCash
+    } finally {
+      updatePaidLoading = false;
     }
   };
 
@@ -98,6 +84,12 @@
         orderId: order.orderId,
       },
     });
+  };
+
+  const statusIsDisabled = (status: string) => {
+    return (
+      orderStatuses.indexOf(status) <= orderStatuses.indexOf(currentStatus)
+    );
   };
 </script>
 
@@ -181,6 +173,7 @@
                   size="sm"
                   color="alternative"
                   on:click={handlePaidInCash}
+                  disabled={updatePaidLoading}
                 >
                   Mark as paid in cash
                 </Button>
