@@ -21,3 +21,7 @@ export {
   updateOrderPaidInCash,
 } from "./api/order";
 export { getProduct, getAllProducts } from "./api/product";
+export {
+  createOnlinePaymentIntent,
+  createOnlinePayment,
+} from "./api/onlinePayment";

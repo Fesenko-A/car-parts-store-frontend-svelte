@@ -4,7 +4,7 @@
   import toast from "svelte-french-toast";
   import { get } from "svelte/store";
   import { loadStripe } from "@stripe/stripe-js";
-  import { apiFetch } from "$lib";
+  import { createOnlinePayment, createOnlinePaymentIntent } from "$lib";
   import { Button, Spinner } from "flowbite-svelte";
   import { Elements, PaymentElement } from "svelte-stripe";
 
@@ -37,17 +37,9 @@
   const createPaymentIntent = async () => {
     const state = get(page).state as { orderId: number };
     try {
-      const response = await apiFetch(
-        `/onlinePayments/createIntent/${state?.orderId}`,
-        {
-          method: "POST",
-        }
-      );
-
-      clientSecret = response.clientSecret;
-    } catch (err) {
-      errorMessage = (err as Error).message;
-      toast.error(errorMessage);
+      clientSecret = await createOnlinePaymentIntent(state.orderId);
+    } catch {
+      // Handled in createOnlinePaymentIntent
     }
   };
 
@@ -70,9 +62,7 @@
       console.log({ result });
 
       const paymentId = result.paymentIntent?.id;
-      await apiFetch(`/onlinePayments/create/${orderId}/${paymentId}`, {
-        method: "POST",
-      });
+      await createOnlinePayment(Number(orderId), paymentId);
       toast.success("Thank you! Your payment was successful.");
     } catch (err) {
       errorMessage = (err as Error).message;
