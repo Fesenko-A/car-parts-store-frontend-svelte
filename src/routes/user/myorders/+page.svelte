@@ -24,14 +24,7 @@
   const loadOrders = async () => {
     loading = true;
     try {
-      const filters = get(orderFilters);
       ordersData = await getAllOrders();
-      paginationHelper.start = (filters.pageNumber - 1) * filters.pageSize;
-      paginationHelper.end = Math.min(
-        filters.pageNumber * filters.pageSize,
-        ordersData.pagination.totalRecords
-      );
-      paginationHelper.total = ordersData.pagination.totalRecords;
     } catch (err) {
       // Handled in getAllOrders
     } finally {
@@ -65,12 +58,6 @@
       unsubscribe?.();
     };
   });
-
-  const paginationHelper = {
-    start: 0,
-    end: 0,
-    total: 0,
-  };
 </script>
 
 <svelte:head>
@@ -101,7 +88,10 @@
 
   {#if ordersData.result.length > 0}
     <OrdersTable orders={ordersData.result} />
-    <PaginationControl {paginationHelper} filters={orderFilters} />
+    <PaginationControl
+      filters={orderFilters}
+      totalRecords={ordersData.pagination.totalRecords}
+    />
   {:else}
     <p class="text-center text-lg mt-4">Nothing to display</p>
   {/if}

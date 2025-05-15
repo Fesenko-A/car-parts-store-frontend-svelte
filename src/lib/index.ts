@@ -20,3 +20,4 @@ export {
   updateOrderStatus,
   updateOrderPaidInCash,
 } from "./api/order";
+export { getProduct, getAllProducts } from "./api/product";

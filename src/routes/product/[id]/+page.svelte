@@ -10,20 +10,28 @@
   } from "flowbite-svelte";
   import type { Product } from "../../../types";
   import { onMount } from "svelte";
-  import { apiFetch, formatCurrency, updateCartItem } from "$lib";
+  import { formatCurrency, getProduct, updateCartItem } from "$lib";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
 
   let product: Product | null = null;
   let loading = false;
 
-  let productId: string;
-  $: productId = $page.params.id;
-
   onMount(async () => {
     loading = true;
-    product = await apiFetch(`/products/get/${productId}`);
-    loading = false;
+    try {
+      const { id } = $page.params;
+      const numericId = Number(id);
+      if (isNaN(numericId)) {
+        throw new Error("Invalid product ID");
+      }
+
+      product = await getProduct(numericId);
+    } catch {
+      // Handled in getProduct
+    } finally {
+      loading = false;
+    }
   });
 
   const handleAddProduct = async () => {

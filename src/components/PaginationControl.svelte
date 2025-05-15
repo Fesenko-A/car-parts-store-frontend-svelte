@@ -1,48 +1,52 @@
 <script lang="ts">
   import { Button } from "flowbite-svelte";
-  import { get, type Writable } from "svelte/store";
+  import type { Writable } from "svelte/store";
   import type { PaginationFields } from "../types";
   import { ArrowLeftOutline, ArrowRightOutline } from "flowbite-svelte-icons";
 
   export let filters: Writable<PaginationFields>;
-  export let paginationHelper: {
-    start: number;
-    end: number;
-    total: number;
-  };
+  export let totalRecords: number;
 
-  let disabledPrev = paginationHelper.start == 0;
-  let disabledNext = paginationHelper.end == paginationHelper.total;
+  $: currentFilters = $filters;
+  $: start = (currentFilters.pageNumber - 1) * currentFilters.pageSize + 1;
+  $: end = Math.min(
+    currentFilters.pageNumber * currentFilters.pageSize,
+    totalRecords
+  );
+
+  $: disabledPrev = start <= 1;
+  $: disabledNext = end >= totalRecords;
 
   const next = () => {
-    const current = get(filters);
-    if (paginationHelper.end < paginationHelper.total) {
-      filters.set({ ...current, pageNumber: current.pageNumber + 1 });
+    if (!disabledNext) {
+      filters.set({
+        ...currentFilters,
+        pageNumber: currentFilters.pageNumber + 1,
+      });
     }
   };
 
   const previous = () => {
-    const current = get(filters);
-    if (current.pageNumber > 1) {
-      filters.set({ ...current, pageNumber: current.pageNumber - 1 });
+    if (!disabledPrev) {
+      filters.set({
+        ...currentFilters,
+        pageNumber: currentFilters.pageNumber - 1,
+      });
     }
   };
 </script>
 
 <div class="flex flex-col items-center justify-center gap-2 mb-2">
   <div class="text-sm text-gray-700 dark:text-gray-400">
-    Showing <span class="font-semibold text-gray-900 dark:text-white"
-      >{paginationHelper.start}</span
-    >
+    Showing
+    <span class="font-semibold text-gray-900 dark:text-white">{start}</span>
     to
-    <span class="font-semibold text-gray-900 dark:text-white"
-      >{paginationHelper.end}</span
-    >
+    <span class="font-semibold text-gray-900 dark:text-white">{end}</span>
     of
     <span class="font-semibold text-gray-900 dark:text-white"
-      >{paginationHelper.total}</span
+      >{totalRecords}</span
     >
-    Entries
+    entries
   </div>
 
   <div class="flex space-x-1 rtl:space-x-reverse">
