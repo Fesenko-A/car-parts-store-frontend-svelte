@@ -1,3 +1,8 @@
+export {
+  validateEmail,
+  validateName,
+  validatePhoneNumber,
+} from "./validationHelper";
 export { getShoppingCart, updateCartItem } from "./api/shoppingCart";
 export { checkIfAdmin, checkIfLoggedIn } from "./accessHelper";
 export { login, register, logout, changePassword } from "./api/auth";
@@ -8,3 +13,4 @@ export {
   formatDateTime,
   toQueryString,
 } from "./utils";
+export { createOrder } from "./api/order";

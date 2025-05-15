@@ -1,6 +1,11 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { register } from "$lib";
+  import {
+    register,
+    validateEmail,
+    validateName,
+    validatePhoneNumber,
+  } from "$lib";
   import { Input, Button } from "flowbite-svelte";
   import toast from "svelte-french-toast";
 
@@ -21,28 +26,20 @@
   let passwordValid = false;
   let passwordsMatch = false;
 
-  const validateEmail = () => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    emailValid = regex.test(email);
-    return emailValid;
+  const checkEmail = () => {
+    return (emailValid = validateEmail(email));
   };
 
-  const validateFirstName = () => {
-    const regex = /^[A-Za-z-]+$/;
-    firstNameIsValid = regex.test(firstName);
-    return firstNameIsValid;
+  const checkFirstName = () => {
+    return (firstNameIsValid = validateName(firstName));
   };
 
-  const validateLastName = () => {
-    const regex = /^[A-Za-z-]+$/;
-    lastNameIsValid = regex.test(lastName);
-    return lastNameIsValid;
+  const checkLastName = () => {
+    return (lastNameIsValid = validateName(lastName));
   };
 
-  const validatePhoneNumber = () => {
-    const regex = /^\+?[\d\-]{7,15}$/;
-    phoneIsValid = regex.test(phoneNumber);
-    return phoneIsValid;
+  const checkPhoneNumber = () => {
+    return (phoneIsValid = validatePhoneNumber(phoneNumber));
   };
 
   const validatePassword = () => {
@@ -87,7 +84,7 @@
     <div>
       <Input
         bind:value={email}
-        on:blur={validateEmail}
+        on:blur={checkEmail}
         id="email"
         type="email"
         placeholder="Email"
@@ -104,7 +101,7 @@
     <div>
       <Input
         bind:value={firstName}
-        on:blur={validateFirstName}
+        on:blur={checkFirstName}
         id="firstName"
         type="text"
         placeholder="First name"
@@ -122,7 +119,7 @@
     <div>
       <Input
         bind:value={lastName}
-        on:blur={validateLastName}
+        on:blur={checkLastName}
         id="lastName"
         type="text"
         placeholder="Last name"
@@ -140,7 +137,7 @@
     <div>
       <Input
         bind:value={phoneNumber}
-        on:blur={validatePhoneNumber}
+        on:blur={checkPhoneNumber}
         id="phoneNumber"
         type="text"
         placeholder="Phone number"

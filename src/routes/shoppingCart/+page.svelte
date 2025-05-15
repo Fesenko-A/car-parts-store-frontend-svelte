@@ -52,7 +52,7 @@
             >
           </div>
 
-          <Button class="w-full mt-6 py-4 text-lg" size="lg">
+          <Button class="w-full mt-6 py-4 text-lg" href="/checkout" size="lg">
             Proceed to checkout
           </Button>
         </div>
@@ -67,9 +67,9 @@
             >{formatCurrency($shoppingCart.cartTotal)}</span
           >
         </div>
-        <Button class="w-full py-3 text-lg" size="lg"
-          >Proceed to checkout</Button
-        >
+        <Button class="w-full py-3 text-lg" href="/checkout" size="lg">
+          Proceed to checkout
+        </Button>
       </div>
     {/if}
   {:else}
