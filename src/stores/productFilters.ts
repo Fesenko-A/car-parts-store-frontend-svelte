@@ -13,8 +13,19 @@ export const defaultFilters: ProductFilters = {
   onlyWithDiscount: false,
 };
 
+export const adminDefaultFilters: ProductFilters = {
+  ...defaultFilters,
+  pageSize: 7,
+  outOfStock: true,
+};
+
 export const productFilters = writable({ ...defaultFilters });
+export const adminProductFilters = writable({ ...adminDefaultFilters });
 
 export function resetProductFilters() {
   productFilters.set({ ...defaultFilters });
+}
+
+export function resetAdminProductFilters() {
+  adminProductFilters.set({ ...adminDefaultFilters });
 }

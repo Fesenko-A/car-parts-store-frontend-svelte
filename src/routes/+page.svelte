@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, Spinner } from "flowbite-svelte";
   import { FilterOutline } from "flowbite-svelte-icons";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { fade } from "svelte/transition";
   import { productFilters } from "../stores/productFilters";
   import { get } from "svelte/store";
@@ -26,6 +26,10 @@
     unsubscribe = productFilters.subscribe(() => {
       loadProducts();
     });
+  });
+
+  onDestroy(() => {
+    unsubscribe();
   });
 
   const loadProducts = async () => {

@@ -20,8 +20,11 @@ export {
   updateOrderStatus,
   updateOrderPaidInCash,
 } from "./api/order";
-export { getProduct, getAllProducts } from "./api/product";
+export { getProduct, getAllProducts, createProduct } from "./api/product";
 export {
   createOnlinePaymentIntent,
   createOnlinePayment,
 } from "./api/onlinePayment";
+export { getAllBrands } from "./api/brand";
+export { getAllCategories } from "./api/category";
+export { getAllSpecialTags } from "./api/specialTag";

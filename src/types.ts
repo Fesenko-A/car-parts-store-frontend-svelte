@@ -108,3 +108,15 @@ export type ProductFilters = {
   outOfStock: boolean;
   onlyWithDiscount: boolean;
 };
+
+export type ProductCreateDto = {
+  brandId: number;
+  name: string;
+  description: string;
+  inStock: boolean;
+  specialTagId: number;
+  categoryId: number;
+  initialPrice: number;
+  imageUrl: string;
+  discountPercentage: number;
+};
