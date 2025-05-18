@@ -6,7 +6,12 @@
     SearchOutline,
   } from "flowbite-svelte-icons";
   import { onDestroy, onMount } from "svelte";
-  import { getAllProducts } from "$lib";
+  import {
+    getAllBrands,
+    getAllCategories,
+    getAllProducts,
+    getAllSpecialTags,
+  } from "$lib";
   import ProductsTable from "../../../components/ProductsTable.svelte";
   import PaginationControl from "../../../components/PaginationControl.svelte";
   import {
@@ -14,6 +19,7 @@
     resetAdminProductFilters,
   } from "../../../stores/productFilters";
   import { get } from "svelte/store";
+  import ProductUpsertDrawer from "../../../components/ProductUpsertDrawer.svelte";
 
   let addDrawerHidden = true;
   let searchString: string = "";
@@ -24,26 +30,36 @@
 
   let unsubscribe: () => void;
 
-  onMount(() => {
-    loadProducts();
+  onMount(async () => {
+    loading = true;
+    await loadProducts();
+    await loadProductDetails();
 
     unsubscribe = filters.subscribe(() => {
       loadProducts();
+      loadProductDetails();
     });
+
+    loading = false;
   });
 
-  onDestroy(() => {
-    unsubscribe();
-  });
+  onDestroy(() => unsubscribe?.());
 
   const loadProducts = async () => {
-    loading = true;
     try {
       products = await getAllProducts(get(filters));
     } catch {
       // Handled in getAllProducts
-    } finally {
-      loading = false;
+    }
+  };
+
+  const loadProductDetails = async () => {
+    try {
+      await getAllBrands();
+      await getAllCategories();
+      await getAllSpecialTags();
+    } catch {
+      // Handled in API calls
     }
   };
 
@@ -99,3 +115,9 @@
     <Spinner size={12} class="mx-auto mt-20" />
   </div>
 {/if}
+
+<ProductUpsertDrawer
+  bind:hidden={addDrawerHidden}
+  mode="create"
+  onProductCreated={loadProducts}
+/>

@@ -19,7 +19,9 @@
     specialTags,
   } from "../stores/productDetailsStore";
   import { sineIn } from "svelte/easing";
-  import type { Product } from "../types";
+  import type { Product, ProductCreateDto } from "../types";
+  import toast from "svelte-french-toast";
+  import { createProduct } from "$lib";
 
   const initialProductState: Product = {
     id: 0,
@@ -31,15 +33,19 @@
     finalPrice: 0,
     brandId: 0,
     categoryId: 0,
-    specialTagId: 0,
+    specialTagId: null,
     inStock: true,
     brand: { id: 0, name: "" },
     category: { id: 0, name: "" },
-    specialTag: { id: 0, name: "" },
+    specialTag: null,
   };
 
   export let selectedProduct: Product = { ...initialProductState };
   export let hidden: boolean = true;
+  export let mode: "create" | "update" = "create";
+  export let onProductCreated: () => void = () => {};
+
+  let loading = false;
 
   $: selectedProduct = selectedProduct || initialProductState;
 
@@ -54,13 +60,13 @@
         100
     ) / 100;
 
-  function handlePriceChange() {
+  const handlePriceChange = () => {
     if (selectedProduct!.initialPrice < 0) {
       selectedProduct!.initialPrice = 0.1;
     }
-  }
+  };
 
-  function handleDiscountChange(event: any) {
+  const handleDiscountChange = (event: any) => {
     const target = event.target;
     if (target) {
       let value = Math.floor(Number(target.value));
@@ -68,16 +74,37 @@
       if (value > 100) value = 100;
       selectedProduct!.discountPercentage = value;
     }
-  }
+  };
 
-  function handleSubmit(event: Event) {
+  const handleSubmit = async (event: Event) => {
+    loading = true;
     event.preventDefault();
+    validateProduct();
 
-    if (!selectedProduct) {
-      alert("Product details are not available.");
-      return;
+    if (mode === "create") {
+      try {
+        const productCreateDto = convertToDto();
+        console.log(productCreateDto);
+        await createProduct(productCreateDto);
+        toast.success("A new product has been created successfully!");
+        onProductCreated();
+      } catch {
+        // Handled in createProduct
+      }
+    } else if (mode === "update") {
     }
 
+    hidden = true;
+    loading = false;
+    selectedProduct = {
+      ...initialProductState,
+      brand: { id: 0, name: "" },
+      category: { id: 0, name: "" },
+      specialTag: null,
+    };
+  };
+
+  const validateProduct = () => {
     const isValid =
       selectedProduct.name.trim() !== "" &&
       selectedProduct.description.trim() !== "" &&
@@ -89,13 +116,30 @@
       selectedProduct.discountPercentage <= 100;
 
     if (!isValid) {
-      alert("Please fill all required fields.");
+      toast.error("Please fill all required fields.");
       return;
     }
-    console.log(selectedProduct);
-    hidden = true;
-    selectedProduct = { ...initialProductState };
-  }
+  };
+
+  const convertToDto = (includeId: boolean = false) => {
+    const dto: any = {
+      brandId: selectedProduct.brandId,
+      name: selectedProduct.name,
+      description: selectedProduct.description,
+      inStock: selectedProduct.inStock,
+      specialTagId: selectedProduct.specialTagId ?? null,
+      categoryId: selectedProduct.categoryId,
+      initialPrice: selectedProduct.initialPrice,
+      imageUrl: selectedProduct.imageUrl,
+      discountPercentage: selectedProduct.discountPercentage,
+    };
+
+    if (includeId) {
+      dto.id = selectedProduct.id;
+    }
+
+    return dto;
+  };
 
   let transitionParams = {
     x: 320,
@@ -110,6 +154,7 @@
   bind:hidden
   id="sidebar4"
   placement="right"
+  activateClickOutside={false}
 >
   <div class="flex items-center">
     <h5
@@ -277,6 +322,17 @@
     <div class="mb-3">
       <Toggle bind:checked={selectedProduct.inStock}>In stock</Toggle>
     </div>
-    <Button type="submit" class="w-full" on:click={handleSubmit}>Submit</Button>
+    <Button
+      type="submit"
+      class="w-full"
+      disabled={loading}
+      on:click={handleSubmit}
+    >
+      {#if loading}
+        Loading...
+      {:else}
+        Submit
+      {/if}
+    </Button>
   </form>
 </Drawer>

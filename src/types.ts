@@ -1,20 +1,3 @@
-export type Product = {
-  id: number;
-  name: string;
-  description: string;
-  imageUrl: string;
-  brandId: number;
-  brand: Brand;
-  specialTagId?: number | null;
-  specialTag?: SpecialTag | null;
-  categoryId: number;
-  category: Category;
-  inStock: boolean;
-  initialPrice: number;
-  discountPercentage: number;
-  finalPrice: number;
-};
-
 export type Brand = {
   id: number;
   name: string;
@@ -109,12 +92,29 @@ export type ProductFilters = {
   onlyWithDiscount: boolean;
 };
 
+export type Product = {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  brandId: number;
+  brand: Brand;
+  specialTagId?: number | null;
+  specialTag?: SpecialTag | null;
+  categoryId: number;
+  category: Category;
+  inStock: boolean;
+  initialPrice: number;
+  discountPercentage: number;
+  finalPrice: number;
+};
+
 export type ProductCreateDto = {
   brandId: number;
   name: string;
   description: string;
   inStock: boolean;
-  specialTagId: number;
+  specialTagId?: number | null;
   categoryId: number;
   initialPrice: number;
   imageUrl: string;

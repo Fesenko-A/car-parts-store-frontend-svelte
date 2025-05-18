@@ -20,17 +20,15 @@
 
   let unsubscribe: () => void;
 
-  onMount(() => {
-    loadProducts();
+  onMount(async () => {
+    await loadProducts();
 
     unsubscribe = productFilters.subscribe(() => {
       loadProducts();
     });
   });
 
-  onDestroy(() => {
-    unsubscribe();
-  });
+  onDestroy(() => unsubscribe?.());
 
   const loadProducts = async () => {
     loading = true;

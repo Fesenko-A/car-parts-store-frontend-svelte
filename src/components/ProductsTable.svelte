@@ -37,11 +37,13 @@
     {#each products as product}
       <TableBodyRow>
         <TableBodyCell>{product.id}</TableBodyCell>
-        <TableBodyCell
-          >{product.name.length > 50
-            ? product.name.slice(0, 50) + "..."
-            : product.name}</TableBodyCell
-        >
+        <TableBodyCell>
+          <a href="/product/{product.id}">
+            {product.name.length > 50
+              ? product.name.slice(0, 50) + "..."
+              : product.name}
+          </a>
+        </TableBodyCell>
         <TableBodyCell>
           {product.description.length > 30
             ? product.description.slice(0, 30) + "..."
