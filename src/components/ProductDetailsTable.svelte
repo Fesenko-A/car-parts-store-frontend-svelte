@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     Button,
-    Input,
     Modal,
     Table,
     TableBody,
@@ -12,41 +11,43 @@
   } from "flowbite-svelte";
   import { ExclamationCircleOutline } from "flowbite-svelte-icons";
   import type { Brand, Category, SpecialTag } from "../types";
+  import {
+    brands,
+    categories,
+    specialTags,
+  } from "../stores/productDetailsStore";
+  import ProductDetailsCreateModal from "./ProductDetailsCreateModal.svelte";
 
-  export let productDetailsList: (Brand | Category | SpecialTag)[] = [];
-  export let type: string = "brand";
+  export let type: "brand" | "category" | "special tag";
+
+  let productDetailsList: (Brand | Category | SpecialTag)[] = [];
 
   let deletePopupModal = false;
-  const deleteProductDetail = (productDetail: any) => {
-    deletePopupModal = true;
-    console.log(productDetail);
-  };
-
   let addModal = false;
-  let productDetailName: string = "";
 
-  const addProductDetail = () => {
-    if (!productDetailName.trim()) {
-      let errorMessage = `Please enter a valid name for the ${type}.`;
-      console.log(errorMessage);
-      return;
+  $: {
+    switch (type) {
+      case "brand":
+        $brands && (productDetailsList = $brands);
+        break;
+      case "category":
+        $categories && (productDetailsList = $categories);
+        break;
+      case "special tag":
+        $specialTags && (productDetailsList = $specialTags);
+        break;
     }
+  }
 
-    console.log("Adding", type, productDetailName);
-    productDetailName = "";
-    addModal = false;
+  const deleteProductDetail = (id: number) => {
+    deletePopupModal = true;
   };
 </script>
 
 <Table hoverable={true} striped={true} shadow>
   <TableHead class="dark:bg-gray-200 dark:text-black">
     <TableHeadCell>ID</TableHeadCell>
-    <TableHeadCell>
-      Name
-      <Button size="xs" class="px-2 ms-1" on:click={() => (addModal = true)}
-        >Add new</Button
-      >
-    </TableHeadCell>
+    <TableHeadCell>Name</TableHeadCell>
     <TableHeadCell>Action</TableHeadCell>
   </TableHead>
   <TableBody tableBodyClass="divide-y">
@@ -58,11 +59,18 @@
           <Button
             color="red"
             size="xs"
-            on:click={() => deleteProductDetail(productDetail)}>Delete</Button
+            on:click={() => deleteProductDetail(productDetail.id)}
+            >Delete</Button
           >
         </TableBodyCell>
       </TableBodyRow>
     {/each}
+    <TableBodyRow>
+      <TableBodyCell colspan={2}></TableBodyCell>
+      <TableBodyCell>
+        <Button size="xs" on:click={() => (addModal = true)}>Add new</Button>
+      </TableBodyCell>
+    </TableBodyRow>
   </TableBody>
 </Table>
 
@@ -79,23 +87,4 @@
   </div>
 </Modal>
 
-<Modal title="Add {type}" bind:open={addModal} autoclose>
-  <div class="flex flex-col gap-4 items-center">
-    <Input
-      required
-      placeholder={`Name of ${type}`}
-      bind:value={productDetailName}
-      class="w-full"
-    />
-    <div class="flex gap-2 w-full justify-end">
-      <Button
-        type="button"
-        color="alternative"
-        on:click={() => (addModal = false)}
-      >
-        Cancel
-      </Button>
-      <Button type="button" on:click={addProductDetail}>Submit</Button>
-    </div>
-  </div>
-</Modal>
+<ProductDetailsCreateModal bind:open={addModal} {type} />

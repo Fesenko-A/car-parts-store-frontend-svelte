@@ -1,18 +1,25 @@
 <script>
   import { Tabs, TabItem } from "flowbite-svelte";
-  import {
-    brands,
-    categories,
-    specialTags,
-  } from "../../../stores/productDetailsStore";
-  import { get } from "svelte/store";
   import ProductDetailsTable from "../../../components/ProductDetailsTable.svelte";
+  import { onMount } from "svelte";
+  import { getAllBrands, getAllCategories, getAllSpecialTags } from "$lib";
 
-  let brandsList = get(brands);
-  let categoriesList = get(categories);
-  let specialTagsList = get(specialTags);
+  let loading = false;
 
   let type = "brand";
+
+  onMount(async () => {
+    loading = true;
+    try {
+      await getAllBrands();
+      await getAllCategories();
+      await getAllSpecialTags();
+    } catch {
+      // Handled in API calls
+    } finally {
+      loading = false;
+    }
+  });
 </script>
 
 <svelte:head>
@@ -28,7 +35,7 @@
   >
     <span slot="title">Brands</span>
     <div class="mx-10">
-      <ProductDetailsTable productDetailsList={brandsList} {type} />
+      <ProductDetailsTable type="brand" />
     </div>
   </TabItem>
   <TabItem
@@ -38,7 +45,7 @@
   >
     <span slot="title">Categories</span>
     <div class="mx-10">
-      <ProductDetailsTable productDetailsList={categoriesList} {type} />
+      <ProductDetailsTable type="category" />
     </div>
   </TabItem>
   <TabItem
@@ -48,7 +55,7 @@
   >
     <span slot="title">Special Tags</span>
     <div class="mx-10">
-      <ProductDetailsTable productDetailsList={specialTagsList} {type} />
+      <ProductDetailsTable type="special tag" />
     </div>
   </TabItem>
 </Tabs>

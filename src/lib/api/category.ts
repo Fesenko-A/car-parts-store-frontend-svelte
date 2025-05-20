@@ -12,3 +12,27 @@ export const getAllCategories = async () => {
     toast.error(errorMessage);
   }
 };
+
+export const createCategory = async (name: string) => {
+  try {
+    await apiFetch(`/categories/create?name=${name}`, {
+      method: "POST",
+    });
+    await getAllCategories();
+  } catch (err) {
+    const errorMessage = (err as Error).message;
+    toast.error(errorMessage);
+  }
+};
+
+export const deleteCategory = async (id: number) => {
+  try {
+    await apiFetch(`/categories/delete/${id}`, {
+      method: "DELETE",
+    });
+    await getAllCategories();
+  } catch (err) {
+    const errorMessage = (err as Error).message;
+    toast.error(errorMessage);
+  }
+};

@@ -30,6 +30,14 @@ export {
   createOnlinePaymentIntent,
   createOnlinePayment,
 } from "./api/onlinePayment";
-export { getAllBrands } from "./api/brand";
-export { getAllCategories } from "./api/category";
-export { getAllSpecialTags } from "./api/specialTag";
+export { getAllBrands, createBrand, deleteBrand } from "./api/brand";
+export {
+  getAllCategories,
+  createCategory,
+  deleteCategory,
+} from "./api/category";
+export {
+  getAllSpecialTags,
+  createSpecialTag,
+  deleteSpecialTag,
+} from "./api/specialTag";
