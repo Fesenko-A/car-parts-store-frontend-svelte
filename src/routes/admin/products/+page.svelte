@@ -26,47 +26,49 @@
   const filters = adminProductFilters;
 
   let products: any = null;
-  let loading = false;
+  let loading = true;
 
   let unsubscribe: () => void;
 
   onMount(async () => {
-    loading = true;
-    await loadProducts();
-    await loadProductDetails();
+    await fetchAllData();
 
     unsubscribe = filters.subscribe(() => {
-      loadProducts();
-      loadProductDetails();
+      fetchAllData();
     });
-
-    loading = false;
   });
 
   onDestroy(() => unsubscribe?.());
+
+  const fetchAllData = async () => {
+    loading = true;
+    await Promise.all([loadProducts(), loadProductDetails()]);
+    loading = false;
+  };
 
   const loadProducts = async () => {
     try {
       products = await getAllProducts(get(filters));
     } catch {
-      // Handled in getAllProducts
+      // error handled elsewhere
     }
   };
 
   const loadProductDetails = async () => {
     try {
-      await getAllBrands();
-      await getAllCategories();
-      await getAllSpecialTags();
+      await Promise.all([
+        getAllBrands(),
+        getAllCategories(),
+        getAllSpecialTags(),
+      ]);
     } catch {
-      // Handled in API calls
+      // error handled elsewhere
     }
   };
 
-  const handleSearchChange = async () => {
+  const handleSearchChange = () => {
     const current = get(filters);
     filters.set({ ...current, searchString, pageNumber: 1 });
-    await loadProducts();
   };
 
   const resetFilters = () => {
@@ -79,7 +81,11 @@
   <title>All products</title>
 </svelte:head>
 
-{#if !loading}
+{#if loading}
+  <div class="flex">
+    <Spinner size={12} class="mx-auto mt-20" />
+  </div>
+{:else}
   <div
     class="flex flex-col sm:flex-row justify-end gap-2 p-2 rounded-lg shadow-sm"
   >
@@ -96,13 +102,13 @@
         <SearchOutline />
       </Button>
     </ButtonGroup>
-
     <Button class="h-10" on:click={() => (addDrawerHidden = false)}>
       Add <PlusOutline class="ms-1" />
     </Button>
   </div>
-  {#if products && products.result && products.result.length > 0}
-    <ProductsTable products={products.result} />
+
+  {#if products && products.result?.length > 0}
+    <ProductsTable products={products.result} on:productUpsert={loadProducts} />
     <PaginationControl
       totalRecords={products.pagination.totalRecords}
       {filters}
@@ -110,14 +116,10 @@
   {:else}
     <p class="text-center">No products to display</p>
   {/if}
-{:else}
-  <div class="flex">
-    <Spinner size={12} class="mx-auto mt-20" />
-  </div>
-{/if}
 
-<ProductUpsertDrawer
-  bind:hidden={addDrawerHidden}
-  mode="create"
-  onProductUpsert={loadProducts}
-/>
+  <ProductUpsertDrawer
+    bind:hidden={addDrawerHidden}
+    mode="create"
+    on:productUpsert={loadProducts}
+  />
+{/if}

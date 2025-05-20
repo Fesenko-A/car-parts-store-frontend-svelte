@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { formatCurrency, getAllProducts } from "$lib";
   import {
     Button,
-    Spinner,
     Table,
     TableBody,
     TableBodyCell,
@@ -13,96 +11,85 @@
   import { EditOutline } from "flowbite-svelte-icons";
   import type { Product } from "../types";
   import ProductUpsertDrawer from "./ProductUpsertDrawer.svelte";
-  import { adminProductFilters } from "../stores/productFilters";
-  import { get } from "svelte/store";
+  import { formatCurrency } from "$lib";
+  import { createEventDispatcher } from "svelte";
 
   export let products: Product[];
 
   let updateDrawerHidden = true;
-  let selectedProduct: Product;
-  let loading = false;
+  let selectedProduct: Product | null = null;
 
-  const filters = adminProductFilters;
+  const dispatch = createEventDispatcher();
 
-  const loadProducts = async () => {
-    loading = true;
-    try {
-      products = await getAllProducts(get(filters));
-    } catch {
-      // Handled in getAllProducts
-    } finally {
-      loading = false;
-    }
+  const handleUpsert = () => {
+    updateDrawerHidden = true;
+    dispatch("productUpsert");
   };
 </script>
 
-{#if loading}
-  <div class="flex">
-    <Spinner class="mx-auto mt-20" />
-  </div>
-{:else}
-  <Table hoverable={true} striped={true}>
-    <TableHead>
-      <TableHeadCell>Id</TableHeadCell>
-      <TableHeadCell>Product name</TableHeadCell>
-      <TableHeadCell>Description</TableHeadCell>
-      <TableHeadCell>Category</TableHeadCell>
-      <TableHeadCell>Brand</TableHeadCell>
-      <TableHeadCell>In stock</TableHeadCell>
-      <TableHeadCell>Special tag</TableHeadCell>
-      <TableHeadCell>Initial price</TableHeadCell>
-      <TableHeadCell>Discount</TableHeadCell>
-      <TableHeadCell>Final price</TableHeadCell>
-      <TableHeadCell>Actions</TableHeadCell>
-    </TableHead>
-    <TableBody tableBodyClass="divide-y">
-      {#each products as product}
-        <TableBodyRow>
-          <TableBodyCell>{product.id}</TableBodyCell>
-          <TableBodyCell>
-            <a href="/product/{product.id}">
-              {product.name.length > 50
-                ? product.name.slice(0, 50) + "..."
-                : product.name}
-            </a>
-          </TableBodyCell>
-          <TableBodyCell>
-            {product.description.length > 30
-              ? product.description.slice(0, 30) + "..."
-              : product.description}
-          </TableBodyCell>
-          <TableBodyCell>{product.category.name}</TableBodyCell>
-          <TableBodyCell>{product.brand.name}</TableBodyCell>
-          <TableBodyCell>{product.inStock ? "Yes" : "No"}</TableBodyCell>
-          <TableBodyCell>{product.specialTag?.name}</TableBodyCell>
-          <TableBodyCell>{formatCurrency(product.initialPrice)}</TableBodyCell>
-          <TableBodyCell
-            >{product.discountPercentage > 0
-              ? product.discountPercentage + "%"
-              : "No"}</TableBodyCell
+<Table hoverable={true} striped={true}>
+  <TableHead>
+    <TableHeadCell>Id</TableHeadCell>
+    <TableHeadCell>Product name</TableHeadCell>
+    <TableHeadCell>Description</TableHeadCell>
+    <TableHeadCell>Category</TableHeadCell>
+    <TableHeadCell>Brand</TableHeadCell>
+    <TableHeadCell>In stock</TableHeadCell>
+    <TableHeadCell>Special tag</TableHeadCell>
+    <TableHeadCell>Initial price</TableHeadCell>
+    <TableHeadCell>Discount</TableHeadCell>
+    <TableHeadCell>Final price</TableHeadCell>
+    <TableHeadCell>Actions</TableHeadCell>
+  </TableHead>
+  <TableBody tableBodyClass="divide-y">
+    {#each products as product}
+      <TableBodyRow>
+        <TableBodyCell>{product.id}</TableBodyCell>
+        <TableBodyCell>
+          <a href="/product/{product.id}">
+            {product.name.length > 50
+              ? product.name.slice(0, 50) + "..."
+              : product.name}
+          </a>
+        </TableBodyCell>
+        <TableBodyCell>
+          {product.description.length > 30
+            ? product.description.slice(0, 30) + "..."
+            : product.description}
+        </TableBodyCell>
+        <TableBodyCell>{product.category.name}</TableBodyCell>
+        <TableBodyCell>{product.brand.name}</TableBodyCell>
+        <TableBodyCell>{product.inStock ? "Yes" : "No"}</TableBodyCell>
+        <TableBodyCell>{product.specialTag?.name}</TableBodyCell>
+        <TableBodyCell>{formatCurrency(product.initialPrice)}</TableBodyCell>
+        <TableBodyCell
+          >{product.discountPercentage > 0
+            ? product.discountPercentage + "%"
+            : "No"}</TableBodyCell
+        >
+        <TableBodyCell>{formatCurrency(product.finalPrice)}</TableBodyCell>
+        <TableBodyCell>
+          <Button
+            color="none"
+            on:click={() => {
+              selectedProduct = product;
+              updateDrawerHidden = false;
+            }}
           >
-          <TableBodyCell>{formatCurrency(product.finalPrice)}</TableBodyCell>
-          <TableBodyCell>
-            <Button
-              color="none"
-              on:click={() => {
-                selectedProduct = product;
-                updateDrawerHidden = false;
-              }}
-            >
-              Edit
-              <EditOutline class="ms-2" />
-            </Button>
-          </TableBodyCell>
-        </TableBodyRow>
-      {/each}
-    </TableBody>
-  </Table>
+            Edit
+            <EditOutline class="ms-2" />
+          </Button>
+        </TableBodyCell>
+      </TableBodyRow>
+    {/each}
+  </TableBody>
+</Table>
 
+{#if selectedProduct}
   <ProductUpsertDrawer
     bind:hidden={updateDrawerHidden}
     {selectedProduct}
-    onProductUpsert={loadProducts}
+    on:productUpsert={handleUpsert}
     mode="update"
   />
 {/if}
