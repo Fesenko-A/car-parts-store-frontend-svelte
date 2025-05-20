@@ -20,7 +20,12 @@ export {
   updateOrderStatus,
   updateOrderPaidInCash,
 } from "./api/order";
-export { getProduct, getAllProducts, createProduct } from "./api/product";
+export {
+  getProduct,
+  getAllProducts,
+  createProduct,
+  updateProduct,
+} from "./api/product";
 export {
   createOnlinePaymentIntent,
   createOnlinePayment,

@@ -120,3 +120,16 @@ export type ProductCreateDto = {
   imageUrl: string;
   discountPercentage: number;
 };
+
+export type ProductUpdateDto = {
+  productId: number;
+  brandId: number;
+  name: string;
+  description: string;
+  inStock: boolean;
+  specialTagId?: number | null;
+  categoryId: number;
+  initialPrice: number;
+  imageUrl: string;
+  discountPercentage: number;
+};

@@ -1,4 +1,5 @@
 import { resetOrderFilters } from "../../stores/orderFilters";
+import { resetAdminProductFilters } from "../../stores/productFilters";
 import { user } from "../../stores/userStore";
 import { apiFetch } from "./api";
 import { API_BASE_URL } from "./apiUrl";
@@ -85,6 +86,7 @@ export const logout = () => {
   localStorage.removeItem("user");
   localStorage.removeItem("accessToken");
   resetOrderFilters();
+  resetAdminProductFilters();
   user.set(null);
 };
 

@@ -119,5 +119,5 @@
 <ProductUpsertDrawer
   bind:hidden={addDrawerHidden}
   mode="create"
-  onProductCreated={loadProducts}
+  onProductUpsert={loadProducts}
 />

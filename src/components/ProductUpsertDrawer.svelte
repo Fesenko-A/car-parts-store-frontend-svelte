@@ -19,9 +19,9 @@
     specialTags,
   } from "../stores/productDetailsStore";
   import { sineIn } from "svelte/easing";
-  import type { Product, ProductCreateDto } from "../types";
+  import type { Product } from "../types";
   import toast from "svelte-french-toast";
-  import { createProduct } from "$lib";
+  import { createProduct, updateProduct } from "$lib";
 
   const initialProductState: Product = {
     id: 0,
@@ -42,12 +42,10 @@
 
   export let selectedProduct: Product = { ...initialProductState };
   export let hidden: boolean = true;
-  export let mode: "create" | "update" = "create";
-  export let onProductCreated: () => void = () => {};
+  export let mode: "create" | "update";
+  export let onProductUpsert: () => void = () => {};
 
   let loading = false;
-
-  $: selectedProduct = selectedProduct || initialProductState;
 
   $: specialTagName = selectedProduct.specialTag
     ? selectedProduct.specialTag.name
@@ -84,24 +82,25 @@
     if (mode === "create") {
       try {
         const productCreateDto = convertToDto();
-        console.log(productCreateDto);
         await createProduct(productCreateDto);
         toast.success("A new product has been created successfully!");
-        onProductCreated();
+        onProductUpsert();
       } catch {
         // Handled in createProduct
       }
     } else if (mode === "update") {
+      try {
+        const productUpdateDto = convertToDto(true);
+        await updateProduct(productUpdateDto);
+        toast.success("The product has been updated successfully!");
+        onProductUpsert();
+      } catch {
+        // Handled in updateProduct
+      }
     }
 
     hidden = true;
     loading = false;
-    selectedProduct = {
-      ...initialProductState,
-      brand: { id: 0, name: "" },
-      category: { id: 0, name: "" },
-      specialTag: null,
-    };
   };
 
   const validateProduct = () => {
@@ -135,7 +134,7 @@
     };
 
     if (includeId) {
-      dto.id = selectedProduct.id;
+      dto.productId = selectedProduct.id;
     }
 
     return dto;
