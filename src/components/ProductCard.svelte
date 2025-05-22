@@ -15,8 +15,8 @@
       loading = true;
       await updateCartItem(product!.id, 1);
       toast.success("Product has been added to the shopping cart!");
-    } catch {
-      // Handled in updateCartItem
+    } catch (err) {
+      toast.error((err as Error).message);
     } finally {
       loading = false;
     }

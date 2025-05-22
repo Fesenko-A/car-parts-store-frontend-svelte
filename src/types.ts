@@ -64,7 +64,6 @@ export type User = {
   email: string;
   phoneNumber: string;
   role: string;
-  shoppingCartId: number;
 };
 
 export type OrderFilters = {

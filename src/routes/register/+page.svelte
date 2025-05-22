@@ -187,9 +187,13 @@
     <Button
       type="submit"
       class="w-full"
-      disabled={!emailValid || !passwordValid || !passwordsMatch}
+      disabled={!emailValid || !passwordValid || !passwordsMatch || loading}
     >
-      Register
+      {#if loading}
+        Registering...
+      {:else}
+        Register
+      {/if}
     </Button>
   </form>
   <p class="text-gray-500 mt-2">

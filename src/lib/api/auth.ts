@@ -1,3 +1,4 @@
+import { goto } from "$app/navigation";
 import { resetOrderFilters } from "../../stores/orderFilters";
 import { resetAdminProductFilters } from "../../stores/productFilters";
 import { user } from "../../stores/userStore";
@@ -58,27 +59,36 @@ export const setAccessToken = (token: string) => {
   localStorage.setItem("accessToken", token);
 };
 
-export const refreshAccessToken = async () => {
+export const refreshAccessToken = async (): Promise<string> => {
   const response = await fetch(`${API_BASE_URL}/auth/refreshToken`, {
     method: "POST",
     credentials: "include",
   });
 
   if (!response.ok) {
-    throw new Error("Failed to refresh access token");
+    const status = response.status;
+
+    let errorMessage = `Failed to refresh access token. Status: ${status}`;
+    try {
+      const errorData = await response.json();
+      if (errorData?.errorMessage) {
+        errorMessage = errorData.errorMessage;
+      }
+    } catch {
+      // response was not JSON, ignore
+    }
+    logout();
+    goto("/login");
+    throw new Error(errorMessage);
   }
 
-  try {
-    const data = await response.json();
-    if (data?.data) {
-      setAccessToken(data.data);
-      return data.data;
-    } else {
-      throw new Error("Access token not found in refresh response");
-    }
-  } catch (error) {
-    console.error("Error parsing refresh token response:", error);
-    throw new Error("Failed to parse refresh token response");
+  const data = await response.json();
+
+  if (data?.data) {
+    setAccessToken(data.data);
+    return data.data;
+  } else {
+    throw new Error("Access token not found in refresh response");
   }
 };
 

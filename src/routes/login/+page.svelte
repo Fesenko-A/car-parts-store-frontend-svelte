@@ -61,7 +61,11 @@
       />
     </div>
 
-    <Button type="submit" class="w-full" disabled={!email || !password}>
+    <Button
+      type="submit"
+      class="w-full"
+      disabled={!email || !password || loading}
+    >
       {#if loading}
         Logging in...
       {:else}

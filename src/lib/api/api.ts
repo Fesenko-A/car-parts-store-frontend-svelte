@@ -5,13 +5,14 @@ interface ApiFetchOptions extends RequestInit {
   headers?: Record<string, string>;
 }
 
-export async function apiFetch(
+export const apiFetch = async (
   endpoint: string,
   options: ApiFetchOptions = {},
   requiresAuth = true
-) {
+) => {
   try {
     let accessToken = requiresAuth ? getAccessToken() : null;
+    let json: any;
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -33,14 +34,10 @@ export async function apiFetch(
       });
     }
 
-    const text = await res.text();
-    if (!text) {
-      throw new Error("Empty response from server");
-    }
-
-    const json = JSON.parse(text);
-    if (!json.isSuccess) {
-      throw new Error(json.errorMessage || "Unknown API error");
+    try {
+      json = await res.json();
+    } catch {
+      throw new Error("Invalid JSON response from server");
     }
 
     return json.data;
@@ -48,4 +45,4 @@ export async function apiFetch(
     console.error("API fetch error:", error);
     throw error;
   }
-}
+};
