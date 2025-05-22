@@ -72,15 +72,8 @@
 {/if}
 
 {#if loading}
-  <div
-    in:fade={{ duration: 200 }}
-    out:fade={{ duration: 100 }}
-    class="relative w-full"
-  >
-    <Spinner
-      size="12"
-      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-    />
+  <div class="flex">
+    <Spinner size={12} class="mx-auto mt-20" />
   </div>
 {:else}
   <div class="m-3 flex items-center" transition:fade={{ duration: 500 }}>

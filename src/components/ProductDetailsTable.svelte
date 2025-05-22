@@ -16,6 +16,7 @@
   } from "../stores/productDetailsStore";
   import ProductDetailsCreateModal from "./ProductDetailsCreateModal.svelte";
   import ProductDetailsDeleteModal from "./ProductDetailsDeleteModal.svelte";
+  import { PlusOutline, TrashBinOutline } from "flowbite-svelte-icons";
 
   export let type: "brand" | "category" | "special tag";
 
@@ -59,17 +60,22 @@
         <TableBodyCell>{productDetail.name}</TableBodyCell>
         <TableBodyCell>
           <Button
-            color="red"
-            size="xs"
-            on:click={() => deleteProductDetail(productDetail)}>Delete</Button
+            color="alternative"
+            on:click={() => deleteProductDetail(productDetail)}
           >
+            <TrashBinOutline class="me-2" color="#d30000" />
+            Delete
+          </Button>
         </TableBodyCell>
       </TableBodyRow>
     {/each}
     <TableBodyRow>
       <TableBodyCell colspan={2}></TableBodyCell>
       <TableBodyCell>
-        <Button size="xs" on:click={() => (addModal = true)}>Add new</Button>
+        <Button color="alternative" on:click={() => (addModal = true)}>
+          <PlusOutline class="me-2" />
+          Add new
+        </Button>
       </TableBodyCell>
     </TableBodyRow>
   </TableBody>

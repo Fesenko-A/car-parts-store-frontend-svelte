@@ -70,7 +70,7 @@
         <TableBodyCell>{formatCurrency(product.finalPrice)}</TableBodyCell>
         <TableBodyCell>
           <Button
-            color="none"
+            color="alternative"
             on:click={() => {
               selectedProduct = product;
               updateDrawerHidden = false;
