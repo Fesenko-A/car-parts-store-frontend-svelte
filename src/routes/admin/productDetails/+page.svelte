@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
   import { Tabs, TabItem } from "flowbite-svelte";
   import ProductDetailsTable from "../../../components/ProductDetailsTable.svelte";
   import { onMount } from "svelte";
   import { getAllBrands, getAllCategories, getAllSpecialTags } from "$lib";
+  import toast from "svelte-french-toast";
 
   let loading = false;
 
@@ -14,8 +15,8 @@
       await getAllBrands();
       await getAllCategories();
       await getAllSpecialTags();
-    } catch {
-      // Handled in API calls
+    } catch (err) {
+      toast.error((err as Error).message);
     } finally {
       loading = false;
     }

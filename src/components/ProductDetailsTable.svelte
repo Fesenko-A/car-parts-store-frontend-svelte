@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     Button,
-    Modal,
     Table,
     TableBody,
     TableBodyCell,
@@ -9,7 +8,6 @@
     TableHead,
     TableHeadCell,
   } from "flowbite-svelte";
-  import { ExclamationCircleOutline } from "flowbite-svelte-icons";
   import type { Brand, Category, SpecialTag } from "../types";
   import {
     brands,
@@ -17,13 +15,16 @@
     specialTags,
   } from "../stores/productDetailsStore";
   import ProductDetailsCreateModal from "./ProductDetailsCreateModal.svelte";
+  import ProductDetailsDeleteModal from "./ProductDetailsDeleteModal.svelte";
 
   export let type: "brand" | "category" | "special tag";
 
   let productDetailsList: (Brand | Category | SpecialTag)[] = [];
 
-  let deletePopupModal = false;
+  let deleteModal = false;
   let addModal = false;
+
+  let selectedProductDetail: any;
 
   $: {
     switch (type) {
@@ -39,8 +40,9 @@
     }
   }
 
-  const deleteProductDetail = (id: number) => {
-    deletePopupModal = true;
+  const deleteProductDetail = (productDetail: any) => {
+    deleteModal = true;
+    selectedProductDetail = productDetail;
   };
 </script>
 
@@ -59,8 +61,7 @@
           <Button
             color="red"
             size="xs"
-            on:click={() => deleteProductDetail(productDetail.id)}
-            >Delete</Button
+            on:click={() => deleteProductDetail(productDetail)}>Delete</Button
           >
         </TableBodyCell>
       </TableBodyRow>
@@ -74,17 +75,10 @@
   </TableBody>
 </Table>
 
-<Modal bind:open={deletePopupModal} size="xs" autoclose>
-  <div class="text-center">
-    <ExclamationCircleOutline class="mx-auto mb-4 text-gray-400 w-12 h-12" />
-    <h3 class="mb-5 text-lg font-normal text-gray-500">
-      Are you sure you want to delete this {type}?
-    </h3>
-    <Button color="red" class="me-2">Yes, I'm sure</Button>
-    <Button color="alternative" on:click={() => (deletePopupModal = false)}
-      >No, cancel</Button
-    >
-  </div>
-</Modal>
+<ProductDetailsDeleteModal
+  bind:open={deleteModal}
+  productDetail={selectedProductDetail}
+  {type}
+/>
 
 <ProductDetailsCreateModal bind:open={addModal} {type} />

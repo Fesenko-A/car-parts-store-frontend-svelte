@@ -32,8 +32,8 @@
     try {
       await createBrand(productDetailName);
       toast.success("A new brand has been created successfully!");
-    } catch {
-      // Handled in createBrand
+    } catch (err) {
+      toast.error((err as Error).message);
     }
   };
 
@@ -41,8 +41,8 @@
     try {
       await createCategory(productDetailName);
       toast.success("A new category has been created successfully!");
-    } catch {
-      // Handled in createCategory
+    } catch (err) {
+      toast.error((err as Error).message);
     }
   };
 
@@ -50,8 +50,8 @@
     try {
       await createSpecialTag(productDetailName);
       toast.success("A new special tag has been created successfully!");
-    } catch {
-      // Handled in createSpecialTag
+    } catch (err) {
+      toast.error((err as Error).message);
     }
   };
 </script>
