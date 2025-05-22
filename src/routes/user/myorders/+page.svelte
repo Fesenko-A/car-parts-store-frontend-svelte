@@ -12,6 +12,7 @@
   import { checkIfLoggedIn, getAllOrders } from "$lib";
   import OrdersTable from "../../../components/OrdersTable.svelte";
   import PaginationControl from "../../../components/PaginationControl.svelte";
+  import toast from "svelte-french-toast";
 
   const orderStatuses = Object.values(ORDER_STATUS);
   let ordersData: any = null;
@@ -26,7 +27,7 @@
     try {
       ordersData = await getAllOrders();
     } catch (err) {
-      // Handled in getAllOrders
+      toast.error((err as Error).message);
     } finally {
       loading = false;
     }

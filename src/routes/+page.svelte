@@ -9,6 +9,7 @@
   import ProductFiltersDrawer from "../components/ProductFiltersDrawer.svelte";
   import PaginationControl from "../components/PaginationControl.svelte";
   import { getAllProducts } from "$lib";
+  import toast from "svelte-french-toast";
 
   let productsData: any = null;
   let allRelatedBrands: any[] = [];
@@ -35,8 +36,8 @@
     try {
       productsData = await getAllProducts();
       getOrderDetails();
-    } catch {
-      // Handled in getAllProducts
+    } catch (err) {
+      toast.error((err as Error).message);
     } finally {
       loading = false;
     }

@@ -12,7 +12,6 @@
     "pk_test_51OVYpoCBJO48XwYLSsNgcWVvG6Ub2rNmAnODV9NPn6ehINDKpn9TwghaC8tRE8OqCOUWx9Il9alyK2PHKzhlfdrA00qfdMTCBV";
   let stripe: any = null;
   let clientSecret: string | null = null;
-  let errorMessage = "";
   let loading = false;
   let elements: any;
   let orderId: number | null;
@@ -38,8 +37,8 @@
     const state = get(page).state as { orderId: number };
     try {
       clientSecret = await createOnlinePaymentIntent(state.orderId);
-    } catch {
-      // Handled in createOnlinePaymentIntent
+    } catch (err) {
+      toast.error((err as Error).message);
     }
   };
 
@@ -65,8 +64,7 @@
       await createOnlinePayment(Number(orderId), paymentId);
       toast.success("Thank you! Your payment was successful.");
     } catch (err) {
-      errorMessage = (err as Error).message;
-      toast.error(errorMessage);
+      toast.error((err as Error).message);
     } finally {
       history.back();
     }

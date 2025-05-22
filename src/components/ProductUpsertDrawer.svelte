@@ -85,8 +85,8 @@
         await createProduct(productCreateDto);
         toast.success("A new product has been created successfully!");
         onProductUpsert();
-      } catch {
-        // Handled in createProduct
+      } catch (err) {
+        toast.error((err as Error).message);
       }
     } else if (mode === "update") {
       try {
@@ -94,8 +94,8 @@
         await updateProduct(productUpdateDto);
         toast.success("The product has been updated successfully!");
         onProductUpsert();
-      } catch {
-        // Handled in updateProduct
+      } catch (err) {
+        toast.error((err as Error).message);
       }
     }
 

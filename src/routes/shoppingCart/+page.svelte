@@ -6,6 +6,7 @@
   import { cartIsEmpty, shoppingCart } from "../../stores/shoppingCartStore";
   import { goto } from "$app/navigation";
   import CartItem from "../../components/CartItem.svelte";
+  import toast from "svelte-french-toast";
 
   let loading = false;
 
@@ -13,7 +14,8 @@
     try {
       loading = true;
       await getShoppingCart();
-    } catch {
+    } catch (err) {
+      toast.error((err as Error).message);
       goto("/");
     } finally {
       loading = false;

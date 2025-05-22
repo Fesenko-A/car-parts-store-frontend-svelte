@@ -1,5 +1,6 @@
 <script lang="ts">
   import { formatCurrency, updateCartItem } from "$lib";
+  import toast from "svelte-french-toast";
   import type { CartItem } from "../types";
 
   export let cartItem: CartItem;
@@ -10,8 +11,8 @@
     try {
       loading = true;
       await updateCartItem(cartItem.productId, -1);
-    } catch {
-      // Handled in updateCartItem
+    } catch (err) {
+      toast.error((err as Error).message);
     } finally {
       loading = false;
     }
@@ -21,8 +22,8 @@
     try {
       loading = true;
       await updateCartItem(cartItem.productId, 1);
-    } catch {
-      // Handled in updateCartItem
+    } catch (err) {
+      toast.error((err as Error).message);
     } finally {
       loading = false;
     }
@@ -32,8 +33,8 @@
     try {
       loading = true;
       await updateCartItem(cartItem.productId, cartItem.quantity * -1);
-    } catch {
-      // Handled in updateCartItem
+    } catch (err) {
+      toast.error((err as Error).message);
     } finally {
       loading = false;
     }

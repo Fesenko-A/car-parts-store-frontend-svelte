@@ -44,8 +44,8 @@
 
       toast.success("Order status updated successfully");
       notifyAboutRefund();
-    } catch {
-      // Handled in updateOrderStatus
+    } catch (err) {
+      toast.error((err as Error).message);
     } finally {
       statusUpdateLoading = false;
     }
@@ -71,8 +71,8 @@
       const updatedOrder = await updateOrderPaidInCash(order.orderId);
       order = updatedOrder;
       toast.success("Order payment updated successfully");
-    } catch {
-      // Handled in updateOrderPaidInCash
+    } catch (err) {
+      toast.error((err as Error).message);
     } finally {
       updatePaidLoading = false;
     }

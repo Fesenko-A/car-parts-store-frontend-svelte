@@ -5,6 +5,7 @@
   import { getOrder } from "$lib";
   import { Spinner } from "flowbite-svelte";
   import { goto } from "$app/navigation";
+  import toast from "svelte-french-toast";
 
   let order: any = null;
   let loading = true;
@@ -20,6 +21,7 @@
 
       order = await getOrder(numericId);
     } catch (err) {
+      toast.error((err as Error).message);
       goto("/user/myorders");
     } finally {
       loading = false;

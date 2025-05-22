@@ -20,6 +20,7 @@
   } from "../../../stores/productFilters";
   import { get } from "svelte/store";
   import ProductUpsertDrawer from "../../../components/ProductUpsertDrawer.svelte";
+  import toast from "svelte-french-toast";
 
   let addDrawerHidden = true;
   let searchString: string = "";
@@ -49,8 +50,8 @@
   const loadProducts = async () => {
     try {
       products = await getAllProducts(get(filters));
-    } catch {
-      // error handled elsewhere
+    } catch (err) {
+      toast.error((err as Error).message);
     }
   };
 

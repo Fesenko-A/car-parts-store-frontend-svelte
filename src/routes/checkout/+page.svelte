@@ -88,7 +88,8 @@
       } else {
         goto(`/order/${orderId}`);
       }
-    } catch {
+    } catch (err) {
+      toast.error((err as Error).message);
       history.back();
     } finally {
       loading = false;
