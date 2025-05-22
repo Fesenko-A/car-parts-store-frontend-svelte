@@ -21,6 +21,7 @@
   import { get } from "svelte/store";
   import ProductUpsertDrawer from "../../../components/ProductUpsertDrawer.svelte";
   import toast from "svelte-french-toast";
+  import CustomSpinner from "../../../components/CustomSpinner.svelte";
 
   let addDrawerHidden = true;
   let searchString: string = "";
@@ -83,9 +84,7 @@
 </svelte:head>
 
 {#if loading}
-  <div class="flex">
-    <Spinner size={12} class="mx-auto mt-20" />
-  </div>
+  <CustomSpinner />
 {:else}
   <div
     class="flex flex-col sm:flex-row justify-end gap-2 p-2 rounded-lg shadow-sm"

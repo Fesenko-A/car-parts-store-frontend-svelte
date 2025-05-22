@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Spinner } from "flowbite-svelte";
+  import { Button } from "flowbite-svelte";
   import { formatCurrency, getShoppingCart } from "$lib";
   import { CartOutline } from "flowbite-svelte-icons";
   import { onMount } from "svelte";
@@ -7,6 +7,7 @@
   import { goto } from "$app/navigation";
   import CartItem from "../../components/CartItem.svelte";
   import toast from "svelte-french-toast";
+  import CustomSpinner from "../../components/CustomSpinner.svelte";
 
   let loading = false;
 
@@ -75,8 +76,6 @@
       </div>
     {/if}
   {:else}
-    <div class="flex">
-      <Spinner size={12} class="mx-auto mt-20" />
-    </div>
+    <CustomSpinner />
   {/if}
 </div>

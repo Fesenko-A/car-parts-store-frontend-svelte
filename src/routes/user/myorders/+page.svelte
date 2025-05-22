@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { get } from "svelte/store";
-  import { Button, Dropdown, DropdownItem, Spinner } from "flowbite-svelte";
+  import { Button, Dropdown, DropdownItem } from "flowbite-svelte";
   import { ChevronDownOutline, RefreshOutline } from "flowbite-svelte-icons";
   import { ORDER_STATUS } from "../../../constants";
   import {
@@ -13,6 +13,7 @@
   import OrdersTable from "../../../components/OrdersTable.svelte";
   import PaginationControl from "../../../components/PaginationControl.svelte";
   import toast from "svelte-french-toast";
+  import CustomSpinner from "../../../components/CustomSpinner.svelte";
 
   const orderStatuses = Object.values(ORDER_STATUS);
   let ordersData: any = null;
@@ -97,7 +98,5 @@
     <p class="text-center text-lg mt-4">Nothing to display</p>
   {/if}
 {:else}
-  <div class="flex">
-    <Spinner size={12} class="mx-auto mt-20" />
-  </div>
+  <CustomSpinner />
 {/if}

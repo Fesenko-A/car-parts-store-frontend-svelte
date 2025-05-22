@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Spinner } from "flowbite-svelte";
   import { checkIfAdmin, checkIfLoggedIn } from "$lib";
+  import CustomSpinner from "../../components/CustomSpinner.svelte";
 
   let isChecking = true;
 
@@ -37,7 +37,5 @@
     </div>
   </div>
 {:else}
-  <div class="flex">
-    <Spinner class="mx-auto mt-20" size={12} />
-  </div>
+  <CustomSpinner />
 {/if}

@@ -7,7 +7,6 @@
     Dropdown,
     DropdownItem,
     Input,
-    Spinner,
   } from "flowbite-svelte";
   import {
     ChevronDownOutline,
@@ -23,6 +22,7 @@
   import { checkIfAdmin, checkIfLoggedIn, getAllOrders } from "$lib";
   import PaginationControl from "../../../components/PaginationControl.svelte";
   import toast from "svelte-french-toast";
+  import CustomSpinner from "../../../components/CustomSpinner.svelte";
 
   const orderStatuses = Object.values(ORDER_STATUS);
   let ordersData: any = null;
@@ -162,8 +162,6 @@
       <p class="text-center text-lg mt-4">Nothing to display</p>
     {/if}
   {:else}
-    <div class="flex">
-      <Spinner size={12} class="mx-auto mt-20" />
-    </div>
+    <CustomSpinner />
   {/if}
 {/if}

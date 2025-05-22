@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Label, Input, Radio, Button, Spinner } from "flowbite-svelte";
+  import { Label, Input, Radio, Button } from "flowbite-svelte";
   import { PhoneSolid, UserSolid } from "flowbite-svelte-icons";
   import { PAYMENT_METHODS } from "../../constants";
   import {
@@ -15,6 +15,7 @@
   import { afterNavigate, goto } from "$app/navigation";
   import { user } from "../../stores/userStore";
   import { get } from "svelte/store";
+  import CustomSpinner from "../../components/CustomSpinner.svelte";
 
   let paymentMethod = PAYMENT_METHODS.CASH;
   let isChecking = false;
@@ -180,7 +181,5 @@
     {goto("/")}
   {/if}
 {:else}
-  <div class="flex">
-    <Spinner size={12} class="mx-auto mt-20" />
-  </div>
+  <CustomSpinner />
 {/if}

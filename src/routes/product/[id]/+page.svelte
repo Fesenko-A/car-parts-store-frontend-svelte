@@ -5,7 +5,6 @@
     Breadcrumb,
     BreadcrumbItem,
     Button,
-    Spinner,
     Tooltip,
   } from "flowbite-svelte";
   import type { Product } from "../../../types";
@@ -13,6 +12,7 @@
   import { formatCurrency, getProduct, updateCartItem } from "$lib";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
+  import CustomSpinner from "../../../components/CustomSpinner.svelte";
 
   let product: Product | null = null;
   let loading = false;
@@ -143,7 +143,5 @@
     </div>
   {/if}
 {:else}
-  <div class="flex">
-    <Spinner size={12} class="mx-auto mt-20" />
-  </div>
+  <CustomSpinner />
 {/if}

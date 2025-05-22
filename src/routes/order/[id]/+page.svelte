@@ -3,9 +3,9 @@
   import { onMount } from "svelte";
   import OrderDetails from "../../../components/OrderDetails.svelte";
   import { getOrder } from "$lib";
-  import { Spinner } from "flowbite-svelte";
   import { goto } from "$app/navigation";
   import toast from "svelte-french-toast";
+  import CustomSpinner from "../../../components/CustomSpinner.svelte";
 
   let order: any = null;
   let loading = true;
@@ -34,9 +34,7 @@
 </svelte:head>
 
 {#if loading}
-  <div class="flex">
-    <Spinner size={12} class="mx-auto mt-5" />
-  </div>
+  <CustomSpinner />
 {:else if order}
   <OrderDetails {order} />
 {/if}

@@ -5,8 +5,9 @@
   import { get } from "svelte/store";
   import { loadStripe } from "@stripe/stripe-js";
   import { createOnlinePayment, createOnlinePaymentIntent } from "$lib";
-  import { Button, Spinner } from "flowbite-svelte";
+  import { Button } from "flowbite-svelte";
   import { Elements, PaymentElement } from "svelte-stripe";
+  import CustomSpinner from "../../components/CustomSpinner.svelte";
 
   const stripeKey =
     "pk_test_51OVYpoCBJO48XwYLSsNgcWVvG6Ub2rNmAnODV9NPn6ehINDKpn9TwghaC8tRE8OqCOUWx9Il9alyK2PHKzhlfdrA00qfdMTCBV";
@@ -100,7 +101,5 @@
     </div>
   </div>
 {:else}
-  <div class="flex">
-    <Spinner size={12} class="mx-auto mt-20" />
-  </div>
+  <CustomSpinner />
 {/if}

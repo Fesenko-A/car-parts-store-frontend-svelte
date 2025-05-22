@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Spinner } from "flowbite-svelte";
+  import { Button } from "flowbite-svelte";
   import { FilterOutline } from "flowbite-svelte-icons";
   import { onDestroy, onMount } from "svelte";
   import { fade } from "svelte/transition";
@@ -10,6 +10,7 @@
   import PaginationControl from "../components/PaginationControl.svelte";
   import { getAllProducts } from "$lib";
   import toast from "svelte-french-toast";
+  import CustomSpinner from "../components/CustomSpinner.svelte";
 
   let productsData: any = null;
   let allRelatedBrands: any[] = [];
@@ -72,9 +73,7 @@
 {/if}
 
 {#if loading}
-  <div class="flex">
-    <Spinner size={12} class="mx-auto mt-20" />
-  </div>
+  <CustomSpinner />
 {:else}
   <div class="m-3 flex items-center" transition:fade={{ duration: 500 }}>
     <Button on:click={() => (filtersDrawerHidden = false)}>

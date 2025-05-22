@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Label, Spinner } from "flowbite-svelte";
+  import { Button, Label } from "flowbite-svelte";
   import { isAdmin, user } from "../../../stores/userStore";
   import {
     ArrowRightToBracketOutline,
@@ -10,6 +10,7 @@
   import { onMount } from "svelte";
   import UpdatePasswordModal from "../../../components/UpdatePasswordModal.svelte";
   import toast from "svelte-french-toast";
+  import CustomSpinner from "../../../components/CustomSpinner.svelte";
 
   let isChecking = true;
 
@@ -95,7 +96,7 @@
     {/if}
   </div>
 {:else}
-  <Spinner size={12} class="mt-5 mx-auto" />
+  <CustomSpinner />
 {/if}
 
 <UpdatePasswordModal bind:open={updatePasswordModal} />
