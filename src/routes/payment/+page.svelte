@@ -59,7 +59,6 @@
         elements,
         redirect: "if_required",
       });
-      console.log({ result });
 
       const paymentId = result.paymentIntent?.id;
       await createOnlinePayment(Number(orderId), paymentId);

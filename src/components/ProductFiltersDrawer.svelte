@@ -41,28 +41,27 @@
     easing: sineIn,
   };
 
-  let filtersDrawerHidden = true;
   let categoriesDropdownOpen = true;
   let brandsDropdownOpen = false;
   let specialTagsDropdownOpen = false;
   let sortByDropdownOpen = false;
 
-  function resetFilters() {
+  const resetFilters = () => {
     resetProductFilters();
     categoriesDropdownOpen = true;
     brandsDropdownOpen = false;
     specialTagsDropdownOpen = false;
     sortByDropdownOpen = false;
-  }
+  };
 
-  function selectCategory(category: string) {
+  const selectCategory = (category: string) => {
     const current = get(productFilters);
     productFilters.set({ ...current, category, pageNumber: 1 });
     categoriesDropdownOpen = false;
     brandsDropdownOpen = true;
-  }
+  };
 
-  function selectBrand(brand: string) {
+  const selectBrand = (brand: string) => {
     const current = get(productFilters);
     const currentBrands = current.brands ?? [];
 
@@ -71,9 +70,9 @@
       : [...currentBrands, brand];
 
     productFilters.set({ ...current, brands: updatedBrands, pageNumber: 1 });
-  }
+  };
 
-  function selectSpecialTag(specialTag: string) {
+  const selectSpecialTag = (specialTag: string) => {
     const current = get(productFilters);
     const currentSpecialTags = current.specialTags ?? [];
 
@@ -86,30 +85,30 @@
       specialTags: updatedSpecialTags,
       pageNumber: 1,
     });
-  }
+  };
 
-  function selectSortingOption(sortingOptions: string) {
+  const selectSortingOption = (sortingOptions: string) => {
     const current = get(productFilters);
     productFilters.set({ ...current, sortingOptions, pageNumber: 1 });
-  }
+  };
 
-  function includeOutOfStock() {
+  const includeOutOfStock = () => {
     const current = get(productFilters);
     productFilters.set({
       ...current,
       outOfStock: !current.outOfStock,
       pageNumber: 1,
     });
-  }
+  };
 
-  function toggleDiscountOnly() {
+  const toggleDiscountOnly = () => {
     const current = get(productFilters);
     productFilters.set({
       ...current,
       onlyWithDiscount: !current.onlyWithDiscount,
       pageNumber: 1,
     });
-  }
+  };
 </script>
 
 <Drawer transitionType="fly" {transitionParams} bind:hidden id="filtersSidebar">
@@ -125,7 +124,7 @@
         <RefreshOutline />
       </Button>
       <Tooltip>Reset filters</Tooltip>
-      <Button on:click={() => (filtersDrawerHidden = true)} class="w-2">
+      <Button on:click={() => (hidden = true)} class="w-2">
         <CloseOutline />
       </Button>
     </div>

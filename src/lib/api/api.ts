@@ -40,6 +40,10 @@ export const apiFetch = async (
       throw new Error("Invalid JSON response from server");
     }
 
+    if (!res.ok) {
+      throw new Error(json.errorMessage);
+    }
+
     return json.data;
   } catch (error) {
     console.error("API fetch error:", error);
