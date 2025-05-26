@@ -110,7 +110,7 @@
         {/if}
         <span class="block md:hidden ps-2">Cart</span>
       </NavLi>
-      <NavLi href="/" class="flex items-center">
+      <NavLi href="/about" class="flex items-center">
         <InfoCircleOutline size="lg" class="hidden md:block header-button" />
         <span class="block md:hidden ps-2">About</span>
       </NavLi>
@@ -127,7 +127,7 @@
         <CartOutline size="lg" class="hidden md:block header-button" />
         <span class="block md:hidden ps-2">Cart</span>
       </NavLi>
-      <NavLi href="/" class="flex items-center">
+      <NavLi href="/about" class="flex items-center">
         <InfoCircleOutline size="lg" class="hidden md:block header-button" />
         <span class="block md:hidden ps-2">About</span>
       </NavLi>
